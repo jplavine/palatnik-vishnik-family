@@ -73,14 +73,17 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 /* tree */
 .stage{position:relative;height:min(78vh,920px);min-height:460px;border:1px solid var(--rule);border-radius:4px;background:
   radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--muted) 22%, transparent) 1px, transparent 0) 0 0/22px 22px, var(--bg);overflow:hidden}
-.stage svg{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
-.stage svg:active{cursor:grabbing}
+.stage{cursor:grab;touch-action:none}
+.stage:active{cursor:grabbing}
+.stage svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.layer{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0}
+.layer > .node{position:absolute}
 .link{fill:none;stroke-width:1.4}
 .link.P{stroke:color-mix(in srgb,var(--pal) 55%,transparent)} .link.V{stroke:color-mix(in srgb,var(--vis) 55%,transparent)}
 .link.ref{stroke:var(--bridge);stroke-dasharray:4 4}
 .link.on{stroke-width:2.6} .link.P.on{stroke:var(--pal)} .link.V.on{stroke:var(--vis)}
 .genlabel{font-family:var(--sans);font-size:11px;letter-spacing:.12em;text-transform:uppercase;fill:var(--muted)}
-.node{position:relative;width:100%;height:100%;font-family:var(--sans)}
+.node{font-family:var(--sans)}
 .card{position:absolute;inset:0 16px 0 0;display:block;text-align:left;background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:6px 10px 6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 1px 0 rgb(0 0 0 / .04)}
 .P .card{border-color:color-mix(in srgb,var(--pal) 40%,var(--rule))}
 .V .card{border-color:color-mix(in srgb,var(--vis) 40%,var(--rule))}
@@ -104,7 +107,7 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .hint{position:absolute;left:10px;bottom:8px;font-size:11.5px;color:var(--muted);background:color-mix(in srgb,var(--bg) 85%,transparent);padding:2px 6px;border-radius:3px;pointer-events:none}
 
 /* detail panel */
-.panel{position:absolute;top:10px;right:10px;bottom:10px;width:min(340px,calc(100% - 20px));background:var(--surface);border:1px solid var(--rule);border-radius:4px;box-shadow:0 12px 32px rgb(0 0 0 / .14);display:flex;flex-direction:column;z-index:20}
+.panel{touch-action:auto;cursor:auto;position:absolute;top:10px;right:10px;bottom:10px;width:min(340px,calc(100% - 20px));background:var(--surface);border:1px solid var(--rule);border-radius:4px;box-shadow:0 12px 32px rgb(0 0 0 / .14);display:flex;flex-direction:column;z-index:20}
 .panel-head{display:flex;justify-content:space-between;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--rule)}
 .panel-head .pnum{font-size:11.5px;letter-spacing:.08em;color:var(--muted);font-variant-numeric:tabular-nums}
 .panel-head h3{font-family:var(--serif);font-size:21px;font-weight:600;line-height:1.15;margin:2px 0 0;text-wrap:balance}
@@ -209,7 +212,8 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
   </div>
 
   <div class="stage" id="stage">
-    <svg id="svg" aria-label="Family tree diagram"><g id="zoomg"><g id="labels"></g><g id="links"></g><g id="nodes"></g></g></svg>
+    <svg id="svg" aria-hidden="true"><g id="zoomg"><g id="labels"></g><g id="links"></g></g></svg>
+    <div class="layer" id="layer" role="group" aria-label="Family tree"></div>
     <div class="hint">Drag to move · pinch or ⌘/Ctrl + scroll to zoom · click a card for details</div>
     <aside class="panel" id="panel" hidden aria-live="polite"></aside>
   </div>
@@ -303,9 +307,12 @@ byKey.forEach(n=>{
 // ---------- tree ----------
 const collapsed=new Set();
 let lineFilter='all', selectedKey=null;
-const svg=d3.select('#svg'), zg=d3.select('#zoomg');
-const zoom=d3.zoom().scaleExtent([0.15,2.2]).filter(e=> e.type==='wheel' ? (e.ctrlKey||e.metaKey) : !e.button).on('zoom',e=>zg.attr('transform',e.transform));
-svg.call(zoom).on('dblclick.zoom',null);
+const stage=d3.select('#stage'), zg=d3.select('#zoomg'), layer=document.getElementById('layer');
+const svg=stage;
+const zoom=d3.zoom().scaleExtent([0.15,2.2])
+  .filter(e=> !e.target.closest('.panel') && (e.type==='wheel' ? (e.ctrlKey||e.metaKey) : !e.button))
+  .on('zoom',e=>{ const t=e.transform; zg.attr('transform',t); layer.style.transform=`translate(${t.x}px,${t.y}px) scale(${t.k})`; });
+stage.call(zoom).on('dblclick.zoom',null);
 let lastRoot=null;
 
 function hiddenCount(n){ let c=0; (n.kids||[]).forEach(k=>{ c++; c+=hiddenCount(k); }); return c; }
@@ -339,17 +346,18 @@ function render(){
     });
 
   // nodes
-  const sel=zg.select('#nodes').selectAll('foreignObject').data(nodes,d=>d.data.key);
-  sel.exit().remove();
-  const ent=sel.enter().append('foreignObject');
-  ent.merge(sel)
-    .attr('x',d=>(d.depth-1)*COLW).attr('y',d=>d.x-d.data.h/2)
-    .attr('width',CARDW).attr('height',d=>d.data.h)
+  d3.select(layer).selectAll('div.node').data(nodes,d=>d.data.key).join('div')
+    .attr('class',d=>nodeClass(d.data))
+    .style('left',d=>(d.depth-1)*COLW+'px').style('top',d=>(d.x-d.data.h/2)+'px')
+    .style('width',CARDW+'px').style('height',d=>d.data.h+'px')
     .html(d=>nodeHTML(d.data));
 }
 
-function nodeHTML(n){
+function nodeClass(n){
   const cls=['node',n.line]; if(n.ref) cls.push('ref'); if(n.key===selectedKey) cls.push('sel');
+  return cls.join(' ');
+}
+function nodeHTML(n){
   let inner;
   if(n.ref){
     const tgt=findByIdPrimary(n.id);
@@ -372,14 +380,14 @@ function nodeHTML(n){
       inner+=`<button class="tog${c?' closed':''}" data-tog="${esc(n.key)}" aria-label="${c?'Show':'Hide'} descendants of ${esc(n.name)}" aria-expanded="${!c}">${c?'+'+hiddenCount(n):'–'}</button>`;
     }
   }
-  return `<div xmlns="http://www.w3.org/1999/xhtml" class="${cls.join(' ')}">${inner}</div>`;
+  return inner;
 }
 function multi_parent(n){ return n.parent && (n.parent.sp||[]).length>1; }
 function findByIdPrimary(id){ for(const n of byKey.values()){ if(n.id===id && !n.ref) return n; } return null; }
 
 
 // ---------- interactions ----------
-document.getElementById('nodes').addEventListener('click',e=>{
+layer.addEventListener('click',e=>{
   const t=e.target.closest('[data-tog]');
   if(t){ const k=t.dataset.tog; collapsed.has(k)?collapsed.delete(k):collapsed.add(k); render(); return; }
   const c=e.target.closest('.card');
@@ -410,7 +418,7 @@ function focusKey(key, opts={}){
 }
 function flash(key){
   setTimeout(()=>{
-    const el=document.querySelector(`#nodes [data-key="${CSS.escape(key)}"]`)?.parentElement;
+    const el=document.querySelector(`#layer [data-key="${CSS.escape(key)}"]`)?.parentElement;
     if(!el) return; el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),1400);
   },60);
 }
@@ -472,8 +480,12 @@ document.getElementById('fit').onclick=()=>fit();
 document.getElementById('expand').onclick=()=>{ collapsed.clear(); render(); fit(); };
 document.getElementById('collapse').onclick=()=>{ collapsed.clear(); byKey.forEach(n=>{ if(n.depth===3 && (n.kids||[]).length) collapsed.add(n.key); }); render(); fit(); };
 function fit(){
-  const b=zg.node().getBBox(); const box=document.getElementById('stage').getBoundingClientRect();
-  if(!b.width) return;
+  const ns=lastRoot?lastRoot.descendants().filter(d=>d.depth>0):[];
+  if(!ns.length) return;
+  const x0=0, x1=d3.max(ns,d=>(d.depth-1)*COLW+CARDW), y0=d3.min(ns,d=>d.x-d.data.h/2)-30, y1=d3.max(ns,d=>d.x+d.data.h/2);
+  const b={x:x0,y:y0,width:x1-x0,height:y1-y0};
+  const box=document.getElementById('stage').getBoundingClientRect();
+  if(!box.width) return;
   const k=Math.min(box.width/(b.width+60), box.height/(b.height+60), 1.1);
   const t=d3.zoomIdentity.translate(box.width/2-(b.x+b.width/2)*k, box.height/2-(b.y+b.height/2)*k).scale(k);
   svg.transition().duration(300).call(zoom.transform,t);
