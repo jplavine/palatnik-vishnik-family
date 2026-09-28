@@ -18,10 +18,19 @@ if '--full' in args:
 I, F = parse(args[0])
 
 # --- merge duplicate records found in the Ancestry export ---
-BEN = 'I262525321262'; I[BEN]['fams'] = [f for f in I[BEN]['fams'] if f != 'F117']   # F117 duplicates Schaje Ben + Ida (F215)
-ISA = 'I262539792217'                                                                 # Isaac: move into Meyer + Chana (F219)
-F['F219']['chil'].append(ISA); I[ISA]['famc'] = ['F219']
-MEY = F['F219']['husb']; I[MEY]['fams'] = [f for f in I[MEY]['fams'] if f != 'F572']
+# Ancestry renumbers family records on every export, so families are found by the people in them.
+def find_fam(a, b=None):
+    for f in I[a]['fams']:
+        fm = F[f]; other = fm['wife'] if fm['husb'] == a else fm['husb']
+        if other == b: return f
+    return None
+BEN, IDA2 = 'I262525321262', 'I262545607073'          # Benjamin + second Ida record duplicate Schaje Ben + Ida
+dup = find_fam(BEN, IDA2)
+I[BEN]['fams'] = [f for f in I[BEN]['fams'] if f != dup]
+ISA, MEY, CHANA = 'I262539792217', 'I262525318449', 'I262525318450'   # Isaac: move into Meyer + Chana
+solo = find_fam(MEY, None); main = find_fam(MEY, CHANA)
+F[main]['chil'].append(ISA); I[ISA]['famc'] = [main]
+I[MEY]['fams'] = [f for f in I[MEY]['fams'] if f != solo]
 DROP = {'I262580014910', 'I262586324092', 'I262546144019'}
 
 # --- private additions (family corrections not yet in Ancestry) ---
@@ -38,7 +47,18 @@ if os.path.exists(add_path):
             if f not in I[new]['fams']: I[new]['fams'].append(f)
         del I[old]
     for pid, name in A.get('rename', {}).items(): I[pid]['literal'] = name
-    FAM_HOME = A.get('family_home', {})
+    for a, b2 in A.get('drop_family', []):
+        f = find_fam(a, b2)
+        if f:
+            for q in (F[f]['husb'], F[f]['wife']):
+                if q: I[q]['fams'] = [x for x in I[q]['fams'] if x != f]
+            for c in F[f]['chil']: DROP.add(c)
+            if a in I and b2 not in (a,): DROP.add(b2)
+            del F[f]
+    for h in A.get('family_home', []):
+        f = find_fam(*h['couple'])
+        if f: FAM_HOME[f] = h['home']
+    resolve = lambda f: find_fam(*f) if isinstance(f, list) else f
     for fam in A.get('families', []):
         F[fam['id']] = {'id': fam['id'], 'husb': fam.get('husb'), 'wife': fam.get('wife'), 'chil': [], 'marr': {}}
         for k in ('husb', 'wife'):
@@ -54,7 +74,7 @@ if os.path.exists(add_path):
             if pid in (fam.get('husb'), fam.get('wife')) and fam['id'] not in I[pid]['fams']: I[pid]['fams'].append(fam['id'])
         if 'spouse_of' in p:
             other = p['spouse_of']
-            fam = p.get('family') or next((f for f in I[other]['fams'] if not (F[f]['husb'] and F[f]['wife'])), None)
+            fam = resolve(p.get('family')) or next((f for f in I[other]['fams'] if not (F[f]['husb'] and F[f]['wife'])), None)
             if not fam:
                 fam = 'AF_' + pid; F[fam] = {'id': fam, 'husb': None, 'wife': None, 'chil': [], 'marr': {}}
                 I[other]['fams'].append(fam)
@@ -62,7 +82,7 @@ if os.path.exists(add_path):
             F[fam][slot] = pid; I[pid]['fams'].append(fam)
         if 'parent' in p:
             par = p['parent']
-            fam = p.get('family') or (I[par]['fams'][0] if I[par]['fams'] else None)
+            fam = resolve(p.get('family')) or (I[par]['fams'][0] if I[par]['fams'] else None)
             if not fam:
                 fam = 'AF_' + par; F[fam] = {'id': fam, 'husb': par if I[par]['sex'] != 'F' else None,
                                            'wife': par if I[par]['sex'] == 'F' else None, 'chil': [], 'marr': {}}
@@ -73,7 +93,7 @@ if os.path.exists(add_path):
             if k in extra: I[pid]['birt' if k[0] == 'b' else 'deat']['date' if len(k) == 1 else 'plac'] = extra[k]
         I[pid]['extra'].update({k: v for k, v in extra.items() if k in ('note', 'fate', 'deceased')})
 
-ROOTS = [('V', 'I262798668669'), ('P', F['F500']['husb'])]   # walk Vishnik first so Hymen sits under his father
+ROOTS = [('V', 'I262798668669'), ('P', 'I262539792216')]   # walk Vishnik first so Hymen sits under his father
 def clean(n): return re.sub(r'\s+', ' ', n.replace('/', ' ')).strip()
 def bad(s): return (not s) or set(s) <= set('?-– ')
 def info(p):
