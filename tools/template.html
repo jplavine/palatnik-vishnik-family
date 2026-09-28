@@ -103,6 +103,12 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .c-sp.sp-bridge,.sps .sp-bridge{font-family:var(--serif);font-weight:600;font-size:14.5px;line-height:18px;color:var(--vis)}
 .c-sp.sp-bridge .yrs,.sps .sp-bridge .life{font-family:var(--sans);font-weight:400;font-size:12px}
 .c-ref{font-size:12px;color:var(--bridge);font-weight:500}
+.c-fate{font-size:12px;line-height:17px;color:var(--vis);font-style:italic;font-weight:600}
+.c-note{font-size:12px;line-height:17px;color:var(--muted);font-style:italic}
+.row .fate{grid-column:2;font-size:12.5px;color:var(--vis);font-style:italic;font-weight:600}
+.row .note{grid-column:2;font-size:12.5px;color:var(--muted);font-style:italic}
+.panel .fate{margin:0;color:var(--vis);font-style:italic;font-weight:600}
+.panel .pnote{margin:0;color:var(--muted);font-style:italic}
 .tog{position:absolute;right:0;top:50%;transform:translateY(-50%);min-width:26px;height:22px;padding:0 5px;border-radius:11px;border:1px solid var(--rule);background:var(--surface);font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);font-variant-numeric:tabular-nums;line-height:20px}
 .tog:hover{color:var(--ink);border-color:var(--ink)}
 .tog.closed{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -185,6 +191,7 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
     <aside class="bridge" aria-label="How the two families connect">
       <h2>Where the families meet</h2>
       <p><button class="linkbtn" data-goto="sara-v">Sara Sura Sokolov</button> (c. 1872–1951) married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pincus (Philip) Palat</button>. Her son <button class="linkbtn v" data-goto="hymen">Hymen Veshnock</button> was half-brother to <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
+      <p>Her son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pincus's daughter <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>, so their children descend from both families.</p>
       <p class="spell">Names are spelled as recorded: Palatnik, Palat, Palatt, Pallot, Polatin · Vishnik, Vishnak, Veshnack, Veshnock, Westock.</p>
     </aside>
   </header>
@@ -251,8 +258,10 @@ function life(p){
   if(b&&d) return b+'–'+d;
   if(b) return 'b. '+b;
   if(d) return 'd. '+d;
-  return '';
+  return p.deceased ? 'Deceased' : '';
 }
+function numLabel(n){ return n.step ? ({M:'Stepson',F:'Stepdaughter'}[n.sex]||'Stepchild') : n.num; }
+function kidsAtText(n){ const t=n.kidsAt&&findByIdPrimary(n.kidsAt); return t ? `Children listed with ${t.name} (${t.num})` : ''; }
 const STATES={Alabama:'AL',Arizona:'AZ',California:'CA',Colorado:'CO',Connecticut:'CT',Delaware:'DE',Florida:'FL',Georgia:'GA',Illinois:'IL',Maryland:'MD',Massachusetts:'MA',Michigan:'MI',Minnesota:'MN',Missouri:'MO','New Jersey':'NJ','New York':'NY','North Carolina':'NC',Ohio:'OH',Oregon:'OR',Pennsylvania:'PA','South Carolina':'SC',Texas:'TX',Utah:'UT',Virginia:'VA',Washington:'WA','District of Columbia':'DC',Nevada:'NV',Georgia:'GA'};
 function shortPlace(s){
   if(!s) return '';
@@ -272,17 +281,18 @@ function prep(n, line, num, depth, parent){
     (n.sp||[]).forEach(s=>{ if(!s.living) people.push({name:s.name, key:n.key, desc:false, line, life:life(s), num, via:n.name}); });
   }
   let i=0;
-  (n.kids||[]).forEach(k=>{ const kn = k.ref ? num+'~' : num+'.'+(++i); prep(k,line,kn,depth+1,n); });
+  (n.kids||[]).forEach(k=>{ const kn = k.ref ? num+'~' : k.step ? num+'~s'+k.id : num+'.'+(++i); prep(k,line,kn,depth+1,n); });
   n.h = cardHeight(n);
 }
 function cardHeight(n){
   const inner=CARDW-16-22;
   const lines=(len,px)=>Math.max(1,Math.ceil(len*px/inner));
-  const numW=(n.num||'').length+ (n.mi?4:0) + 2;
+  const numW=(n.step?11:(n.num||'').length)+ (n.mi?4:0) + 2;
   let h=14 + lines(n.name.length+numW, 7.9)*18;
   if(n.ref) return h+20;
   const lt=[life(n),shortPlace(n.bp)].filter(Boolean).join(' · ');
   if(lt) h+=lines(lt.length,6.5)*17;
+  [n.fate,n.note,n.kidsAt?'Children listed with Xxxxxxxxxxxxxx Xxxxxxxx (1.1.4.1)':''].filter(Boolean).forEach(x=>{ h+=lines(x.length,6.6)*17; });
   (n.sp||[]).forEach(s=>{ h+= (s.also&&s.also.length) ? 6+lines((s.name+' '+life(s)).length+3,7.9)*18 : 6+lines((s.name+' '+life(s)).length+3,6.6)*17; });
   return h+2;
 }
@@ -293,15 +303,13 @@ RAW.forEach((t,i)=>prep(t, i===0?'P':'V', String(i+1), 1, null));
 byKey.forEach(n=>{
   if(!n.parent) return;
   const sp=n.parent.sp||[];
-  if(n.mi){ // family index is by marriage order; spouses list only includes families with a known spouse
-    n.otherParent = sp.find(s=>s.fi===n.mi) || null;
-  } else n.otherParent = sp.length===1? sp[0] : null;
+  n.otherParent = sp.find(s=>s.fi===n.fi) || null;
 });
 
 // ---------- facts ----------
 (function(){
   let desc=0, spouses=new Set(), gens=0, maxY=0;
-  byKey.forEach(n=>{ if(n.ref) return; desc++; gens=Math.max(gens,n.depth); (n.sp||[]).forEach(s=>spouses.add(s.id)); const y=yearOf(n.b); if(y&&y>maxY) maxY=y; });
+  byKey.forEach(n=>{ if(n.ref||n.step) return; desc++; gens=Math.max(gens,n.depth); (n.sp||[]).forEach(s=>spouses.add(s.id)); const y=yearOf(n.b); if(y&&y>maxY) maxY=y; });
   document.getElementById('facts').innerHTML =
     `<li><b>${desc}</b>descendants</li><li><b>${spouses.size}</b>spouses</li><li><b>${gens}</b>generations</li><li><b>1819–${maxY}</b>recorded births</li>`;
 })();
@@ -374,9 +382,9 @@ function nodeHTML(n){
 
     const place=shortPlace(n.bp);
     const lifeTxt=[life(n),place].filter(Boolean).join(' · ');
-    inner=`<button class="card" data-key="${esc(n.key)}" aria-label="${esc(n.name)}, ${esc(n.num)}">
-      <div class="c-top"><span class="c-name">${esc(n.name)}</span><span class="c-num">${esc(n.num)}${n.mi&&multi_parent(n)?' · ⚭'+n.mi:''}</span></div>
-      ${lifeTxt?`<div class="c-life">${esc(lifeTxt)}</div>`:''}${spHTML}</button>`;
+    inner=`<button class="card" data-key="${esc(n.key)}" aria-label="${esc(n.name)}, ${esc(numLabel(n))}">
+      <div class="c-top"><span class="c-name">${esc(n.name)}</span><span class="c-num">${esc(numLabel(n))}${n.mi&&multi_parent(n)?' · ⚭'+n.mi:''}</span></div>
+      ${lifeTxt?`<div class="c-life">${esc(lifeTxt)}</div>`:''}${n.fate?`<div class="c-fate">${esc(n.fate)}</div>`:''}${n.note?`<div class="c-note">${esc(n.note)}</div>`:''}${n.kidsAt?`<div class="c-note">${esc(kidsAtText(n))}</div>`:''}${spHTML}</button>`;
     if((n.kids||[]).length){
       const c=collapsed.has(n.key);
       inner+=`<button class="tog${c?' closed':''}" data-tog="${esc(n.key)}" aria-label="${c?'Show':'Hide'} descendants of ${esc(n.name)}" aria-expanded="${!c}">${c?'+'+hiddenCount(n):'–'}</button>`;
@@ -432,13 +440,15 @@ function showPanel(n){
   if(!n){ panel.hidden=true; return; }
   const chain=[]; let p=n; while(p){ chain.unshift(p); p=p.parent; }
   const sp=n.sp||[];
-  const kids=(n.kids||[]).filter(k=>!k.ref);
-  const refs=(n.kids||[]).filter(k=>k.ref);
+  const kids=(n.kids||[]).filter(k=>!k.ref&&!k.step);
+  const refs=(n.kids||[]).filter(k=>k.ref||k.step);
+  const home=n.kidsAt&&findByIdPrimary(n.kidsAt);
   const where=(d,pl)=>[d, pl].filter(Boolean).map(esc).join('<br><span class="sub">')+(d&&pl?'</span>':'');
   panel.innerHTML=`
-    <div class="panel-head"><div><div class="pnum">No. ${esc(n.num)} · <span class="tag ${n.line}">${LINE_NAME[n.line]}</span></div><h3>${esc(n.name)}</h3></div>
+    <div class="panel-head"><div><div class="pnum">${n.step?esc(numLabel(n)):'No. '+esc(n.num)} · <span class="tag ${n.line}">${LINE_NAME[n.line]}</span></div><h3>${esc(n.name)}</h3></div>
       <button class="x" id="closep" aria-label="Close details">×</button></div>
     <div class="panel-body">
+      ${n.fate?`<p class="fate">${esc(n.fate)}</p>`:''}${n.note?`<p class="pnote">${esc(n.note)}</p>`:''}
       <dl>
         ${n.living?`<dt>Born</dt><dd><span class="sub">Details kept private for living relatives</span></dd>`:''}
         ${n.b||n.bp?`<dt>Born</dt><dd>${where(n.b,n.bp)}</dd>`:''}
@@ -447,7 +457,8 @@ function showPanel(n){
       </dl>
       ${sp.length?`<section><h4>Married</h4><ul>${sp.map(s=>`<li>${esc(s.name)}${life(s)?` <span class="sub">${esc(life(s))}</span>`:''}${s.marr?`<br><span class="sub">m. ${esc(s.marr)}</span>`:''}${s.also&&s.also.length?`<br><span class="sub">Also married ${s.also.map(esc).join(', ')}</span>`:''}</li>`).join('')}</ul></section>`:''}
       ${kids.length?`<section><h4>Children (${kids.length})</h4><ol>${kids.map(k=>`<li>${personLink(k)} <span class="sub">${esc(life(k))}</span></li>`).join('')}</ol></section>`:''}
-      ${refs.length?`<section><h4>Stepchildren</h4><ul>${refs.map(r=>{const t=findByIdPrimary(r.id);return `<li>${t?personLink(t):esc(r.name)}</li>`}).join('')}</ul></section>`:''}
+      ${refs.length?`<section><h4>Stepchildren</h4><ul>${refs.map(r=>{const t=r.step?r:findByIdPrimary(r.id);return `<li>${t?personLink(t):esc(r.name)}</li>`}).join('')}</ul></section>`:''}
+      ${home?`<section><h4>Children</h4><p class="pnote" style="font-style:normal">Listed with ${personLink(home)} (${esc(home.num)})</p></section>`:''}
       <section><h4>Line of descent</h4><div class="crumbs">${chain.map((c,i)=>(i?'<span class="sep">›</span>':'')+personLink(c)).join('')}</div></section>
     </div>`;
   panel.hidden=false;
@@ -465,6 +476,8 @@ const bridgeTargets={
   'hymen':()=>keyWhere(n=>n.name.startsWith('Hymen') && !n.ref),
   'herman':()=>keyWhere(n=>n.name.startsWith('Herman')),
   'max':()=>keyWhere(n=>n.name.startsWith('Max Motel')),
+  'yankl':()=>keyWhere(n=>n.name.startsWith('Yankl Vishnak')),
+  'chaya':()=>keyWhere(n=>n.name==='Chaya Palatnik'),
 };
 function keyWhere(f){ for(const n of byKey.values()) if(f(n)) return n.key; return null; }
 document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>{ const k=bridgeTargets[b.dataset.goto](); if(k) focusKey(k); }));
@@ -511,8 +524,9 @@ function rowHTML(n){
   if(n.ref){ const t=findByIdPrimary(n.id); return `<li><div class="row"><span class="num"></span><span><span class="who" style="font-weight:400">${esc(n.name)}</span></span><span class="refnote">Stepchild · listed in full at ${esc(t?t.num:'')}</span></div></li>`; }
   const sp=(n.sp||[]);
   const place=shortPlace(n.bp);
-  return `<li><div class="row"><span class="num">${esc(n.num)}</span><span><button class="who" data-goto-key="${esc(n.key)}">${esc(n.name)}</button> <span class="life">${esc([life(n),place].filter(Boolean).join(' · '))}</span></span>
+  return `<li><div class="row"><span class="num">${esc(n.step?numLabel(n):n.num)}</span><span><button class="who" data-goto-key="${esc(n.key)}">${esc(n.name)}</button> <span class="life">${esc([life(n),place].filter(Boolean).join(' · '))}</span></span>
     ${sp.length?`<div class="sps">${sp.map((s,i)=>`<span class="m">⚭${sp.length>1?s.fi:''}</span> <span class="${s.also&&s.also.length?'sp-bridge':''}">${esc(s.name)}${life(s)?` <span class="life">${esc(life(s))}</span>`:''}</span>`).join('&nbsp;&nbsp; ')}</div>`:''}
+    ${n.fate?`<div class="fate">${esc(n.fate)}</div>`:''}${n.note?`<div class="note">${esc(n.note)}</div>`:''}${n.kidsAt?`<div class="note">${esc(kidsAtText(n))}</div>`:''}
     </div>${(n.kids||[]).length?`<ul>${n.kids.map(rowHTML).join('')}</ul>`:''}</li>`;
 }
 function renderLists(){

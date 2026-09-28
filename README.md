@@ -9,3 +9,9 @@ Descendants of David Palatnik and Yankel Meir Vishnik of Teplik, Ukraine, with t
 3. Commit and push `index.html`.
 
 The page itself lives in `tools/template.html`. The GEDCOM file is not committed.
+
+## Private additions
+
+Corrections that aren't in Ancestry yet go in `private/additions.json`. The build merges them in, and on the public page living relatives appear as "Living relative". The `private/` folder is never committed, because it holds living relatives' names.
+
+For a full-name copy, run `python3 tools/build.py TREE.ged --full private/full.json`, then `node private/make_doc.js` to build the Word document.
