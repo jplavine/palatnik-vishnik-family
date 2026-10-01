@@ -170,6 +170,13 @@ for sp, ps in spouse_of.items():
                 for s in n.get('sp', []):
                     if s['id'] == sp: s['also'] = [x for x in names if x != n['name']]
 
+# cross-overs: spouses who are themselves descendants (Yankl and Chaya, Sarah's husbands)
+blood = {n['id'] for t in views['wider'] for n in nodes(t) if not n.get('ref')}
+for t in ALL:
+    for n in nodes(t):
+        for s in n.get('sp', []):
+            if s['id'] in blood: s['cross'] = True
+
 for name, ts in views.items():
     c = collections.Counter((n['name'], n['b']) for t in ts for n in nodes(t) if not n.get('ref'))
     print(f"{name:8s} descendants {sum(c.values()):4d}   possible dups: {[k for k, v in c.items() if v > 1]}")

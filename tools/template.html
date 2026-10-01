@@ -109,6 +109,8 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .c-sp{font-size:12px;line-height:17px;color:var(--ink);border-top:1px dotted var(--rule);margin-top:3px;padding-top:2px;overflow-wrap:anywhere}
 .c-sp .m{color:var(--muted);margin-right:4px}
 .c-sp .yrs{color:var(--muted);font-variant-numeric:tabular-nums}
+.c-sp.sp-cross,.sps .sp-cross{font-family:var(--serif);font-weight:600;font-size:14.5px;line-height:18px;color:var(--ink)}
+.c-sp.sp-cross .yrs,.sps .sp-cross .life{font-family:var(--sans);font-weight:400;font-size:12px}
 .c-sp.sp-bridge,.sps .sp-bridge{font-family:var(--serif);font-weight:600;font-size:14.5px;line-height:18px;color:var(--vis)}
 .c-sp.sp-bridge .yrs,.sps .sp-bridge .life{font-family:var(--sans);font-weight:400;font-size:12px}
 .c-ref{font-size:12px;color:var(--bridge);font-weight:500}
@@ -342,7 +344,7 @@ function cardHeight(n){
   const lt=[life(n),shortPlace(n.bp)].filter(Boolean).join(' · ');
   if(lt) h+=lines(lt.length,6.5)*17;
   [n.fate,n.note,n.kidsAt?'Children listed with Xxxxxxxxxxxxxx Xxxxxxxx (1.1.4.1)':''].filter(Boolean).forEach(x=>{ h+=lines(x.length,6.6)*17; });
-  (n.sp||[]).forEach(s=>{ h+= (s.also&&s.also.length) ? 6+lines((s.name+' '+life(s)).length+3,7.9)*18 : 6+lines((s.name+' '+life(s)).length+3,6.6)*17; });
+  (n.sp||[]).forEach(s=>{ h+= ((s.also&&s.also.length)||s.cross) ? 6+lines((s.name+' '+life(s)).length+3,7.9)*18 : 6+lines((s.name+' '+life(s)).length+3,6.6)*17; });
   return h+2;
 }
 Object.entries(VIEWS).forEach(([view,roots])=>roots.forEach(t=>prep(t, view, t.line, view==='wider'?LINE_NUM[t.line]:'1', 1, null)));
@@ -430,7 +432,7 @@ function nodeHTML(n){
     const sp=(n.sp||[]);
     const shown=sp;
     const multi=sp.length>1;
-    const spHTML=shown.map((s,i)=>`<div class="c-sp${s.also&&s.also.length?' sp-bridge':''}"><span class="m">⚭${multi?s.fi:''}</span>${esc(s.name)}${life(s)?` <span class="yrs">${esc(life(s))}</span>`:''}</div>`).join('')
+    const spHTML=shown.map((s,i)=>`<div class="c-sp${s.also&&s.also.length?' sp-bridge':s.cross?' sp-cross':''}"><span class="m">⚭${multi?s.fi:''}</span>${esc(s.name)}${life(s)?` <span class="yrs">${esc(life(s))}</span>`:''}</div>`).join('')
 
     const place=shortPlace(n.bp);
     const lifeTxt=[life(n),place].filter(Boolean).join(' · ');
@@ -589,7 +591,7 @@ function rowHTML(n){
   const sp=(n.sp||[]);
   const place=shortPlace(n.bp);
   return `<li><div class="row"><span class="num">${esc(n.step?numLabel(n):numbered(n)?n.num:'')}</span><span><button class="who${n.lead?' lead-name':''}" data-goto-key="${esc(n.key)}">${esc(n.name)}</button> <span class="life">${esc([life(n),place].filter(Boolean).join(' · '))}</span>${!numbered(n)&&n.depth>1?`<span class="genchip">${esc(genSingular(n.depth))}</span>`:''}</span>
-    ${sp.length?`<div class="sps">${sp.map((s,i)=>`<span class="m">⚭${sp.length>1?s.fi:''}</span> <span class="${s.also&&s.also.length?'sp-bridge':''}">${esc(s.name)}${life(s)?` <span class="life">${esc(life(s))}</span>`:''}</span>`).join('&nbsp;&nbsp; ')}</div>`:''}
+    ${sp.length?`<div class="sps">${sp.map((s,i)=>`<span class="m">⚭${sp.length>1?s.fi:''}</span> <span class="${s.also&&s.also.length?'sp-bridge':s.cross?'sp-cross':''}">${esc(s.name)}${life(s)?` <span class="life">${esc(life(s))}</span>`:''}</span>`).join('&nbsp;&nbsp; ')}</div>`:''}
     ${n.fate?`<div class="fate">${esc(n.fate)}</div>`:''}${n.note?`<div class="note">${esc(n.note)}</div>`:''}${n.kidsAt?`<div class="note">${esc(kidsAtText(n))}</div>`:''}
     </div>${(n.kids||[]).length?`<ul>${n.kids.map(rowHTML).join('')}</ul>`:''}</li>`;
 }
