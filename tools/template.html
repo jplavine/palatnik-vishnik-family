@@ -49,6 +49,10 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .bridge{border:1px solid var(--rule);background:var(--surface);border-radius:4px;padding:14px 16px;font-size:13.5px}
 .bridge h2{font-family:var(--serif);font-size:17px;font-weight:600;margin:0 0 4px;color:var(--bridge)}
 .bridge p{margin:0 0 8px;color:var(--ink)}
+.sitenav{display:flex;gap:18px;font-size:13.5px;font-weight:500}
+.sitenav a{text-decoration:none;color:var(--muted);padding-bottom:2px;border-bottom:2px solid transparent}
+.sitenav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
+.sitenav a:hover{color:var(--ink)}
 .linkbtn{background:none;border:0;padding:0;color:var(--pal);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;cursor:pointer;font-weight:500}
 .linkbtn.v{color:var(--vis)}
 .linkbtn.lead-link{color:var(--vis);font-weight:700}
@@ -205,6 +209,7 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
     <img src="images/cover.jpg" alt="Studio portrait of a family of eight: a bearded father in a cap, a mother in a headscarf, two teenage boys, two young women, a girl and a toddler on a tricycle." width="1600" height="1132">
     <figcaption>Family portrait, early twentieth century.</figcaption>
   </figure>
+  <nav class="sitenav" aria-label="Site"><a href="./" aria-current="page">Family tree</a><a href="towns.html">Teplyk &amp; Zhabokrych</a></nav>
   <header>
     <div>
       <p class="eyebrow">The family of Sarah (Sura) Sokolov of Teplik, Ukraine</p>

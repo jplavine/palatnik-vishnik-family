@@ -240,3 +240,42 @@ data = json.dumps(out, ensure_ascii=False, separators=(',', ':')).replace('</', 
 tpl = open(os.path.join(HERE, 'template.html'), encoding='utf-8').read()
 open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf-8').write(tpl.replace('__DATA__', data))
 print('wrote index.html')
+
+# --- towns page: family members born in Teplyk and Zhabokrych (built from the privacy-safe data) ---
+import html as _html
+def year_txt(s):
+    m = re.search(r'\d{4}', s or '')
+    if not m: return ''
+    return ('c. ' if re.search(r'abt|about|circa|est', s, re.I) else 'bef. ' if re.search(r'bef', s, re.I) else '') + m[0]
+people = {}
+def gather(n, parent):
+    if not n.get('living'):
+        if n['id'] not in people or people[n['id']][1] == 'spouse':
+            if parent:
+                other = next((s for s in parent.get('sp', []) if s.get('fi') == n.get('fi')), None)
+                rel = 'Child of ' + parent['name'] + (' and ' + other['name'] if other and not other.get('living') else '')
+            else:
+                rel = ''
+            people[n['id']] = (n, 'desc', rel)
+    for s in n.get('sp', []):
+        if not s.get('living') and s['id'] not in people:
+            people[s['id']] = (s, 'spouse', 'Married ' + n['name'])
+    for k in n.get('kids', []): gather(k, n)
+for t in out['views']['wider']: gather(t, None)
+def born_in(pat):
+    rows = [v for v in people.values() if re.search(pat, v[0].get('bp') or '', re.I)]
+    rows.sort(key=lambda v: (yr(v[0].get('b')), v[0]['name']))
+    li = []
+    for n, kind, rel in rows:
+        yrs = year_txt(n.get('b'))
+        d = year_txt(n.get('d'))
+        span = (yrs + ('–' + d if d else '')) if yrs else ('d. ' + d if d else '')
+        cls = 'nm lead' if n.get('lead') else 'nm'
+        li.append(f'<li><span class="yr">{_html.escape(span)}</span><span><span class="{cls}">{_html.escape(n["name"])}</span>'
+                  + (f'<span class="rel">{_html.escape(rel)}</span>' if rel else '') + '</span></li>')
+    return len(rows), ''.join(li)
+tc, tl = born_in(r'tepl[iy]k'); zc, zl = born_in(r'zhabokry?i?ch')
+tt = open(os.path.join(HERE, 'towns_template.html'), encoding='utf-8').read()
+tt = tt.replace('__TEPLYK_COUNT__', str(tc)).replace('__TEPLYK_LIST__', tl).replace('__ZHAB_COUNT__', str(zc)).replace('__ZHAB_LIST__', zl)
+open(os.path.join(ROOT, 'towns.html'), 'w', encoding='utf-8').write(tt)
+print('wrote towns.html', tc, 'born in Teplyk,', zc, 'in Zhabokrych')
