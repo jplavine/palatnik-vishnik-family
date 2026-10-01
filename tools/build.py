@@ -99,7 +99,15 @@ SARAH, PINCUS, ASHER, HYMEN = 'I262525311332', 'I262525311317', 'I262525318130',
 f = find_fam(PINCUS, SARAH)
 if f and HYMEN in F[f]['chil']:
     F[f]['chil'].remove(HYMEN); I[HYMEN]['famc'] = [x for x in I[HYMEN]['famc'] if x != f]
-WIDER = [('S', 'I262525318119'), ('P', 'I262539792216'), ('V', 'I262798668669')]
+def oldest(p):   # climb to the earliest recorded ancestor through the father's line
+    seen = set()
+    while I[p]['famc'] and p not in seen:
+        seen.add(p); fm = F.get(I[p]['famc'][0])
+        nxt = fm and (fm['husb'] or fm['wife'])
+        if not nxt or nxt not in I: break
+        p = nxt
+    return p
+WIDER = [('S', oldest('I262525318119')), ('P', oldest('I262539792216')), ('V', oldest('I262798668669'))]
 
 def clean(n): return re.sub(r'\s+', ' ', n.replace('/', ' ')).strip()
 def bad(s): return (not s) or set(s) <= set('?-– ')
