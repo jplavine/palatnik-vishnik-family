@@ -93,7 +93,11 @@ if os.path.exists(add_path):
             if k in extra: I[pid]['birt' if k[0] == 'b' else 'deat']['date' if len(k) == 1 else 'plac'] = extra[k]
         I[pid]['extra'].update({k: v for k, v in extra.items() if k in ('note', 'fate', 'deceased')})
 
-ROOTS = [('V', 'I262798668669'), ('P', 'I262539792216')]   # walk Vishnik first so Hymen sits under his father
+# Sarah (Sura) Sokolov leads the tree: her descendants by both marriages are listed under her,
+# inside the Sokolov family (her parents and her siblings' families).
+SARAH = 'I262525311332'
+for f in I[SARAH]['fams']: FAM_HOME[f] = SARAH
+ROOTS = [('S', 'I262525318119'), ('V', 'I262798668669'), ('P', 'I262539792216')]   # walk Sokolov first
 def clean(n): return re.sub(r'\s+', ' ', n.replace('/', ' ')).strip()
 def bad(s): return (not s) or set(s) <= set('?-– ')
 def info(p):
@@ -111,10 +115,14 @@ def walk(p, line):
     if p in seen:
         node['ref'] = seen[p]; return node
     seen[p] = line
-    fams = sorted([F[f] for f in I[p]['fams'] if f in F],
-                  key=lambda fm: 0 if 'first' in (I.get(fm['wife'] or '', {}).get('name', '') + I.get(fm['husb'] or '', {}).get('name', '')) else 1)
+    shared = collections.Counter(c for f in I[p]['fams'] if f in F for c in F[f]['chil'])
+    def fam_order(fm):   # order marriages by their earliest child found only in that marriage
+        first = 'first' in (I.get(fm['wife'] or '', {}).get('name', '') + I.get(fm['husb'] or '', {}).get('name', ''))
+        return (0 if first else 1, min([yr(I[c]['birt'].get('date')) for c in fm['chil'] if c in I and shared[c] == 1] + [9999]))
+    fams = sorted([F[f] for f in I[p]['fams'] if f in F], key=fam_order)
     with_sp = [fm for fm in fams if (fm['wife'] if fm['husb'] == p else fm['husb']) in I]
-    node['sp'] = []; node['kids'] = []
+    node['sp'] = []; node['kids'] = []; listed = set()
+    if p == SARAH: node['lead'] = True
     for i, fm in enumerate(fams):
         sp = fm['wife'] if fm['husb'] == p else fm['husb']
         if sp and sp in I:
@@ -125,6 +133,8 @@ def walk(p, line):
             continue
         kids = sorted([c for c in fm['chil'] if c in I and c not in DROP], key=lambda c: yr(I[c]['birt'].get('date')))
         for c in kids:
+            if c in listed: continue          # same child recorded in two of this person's families
+            listed.add(c)
             k = walk(c, line)
             k['fi'] = i + 1
             if len(with_sp) > 1 and sp in I: k['mi'] = i + 1
@@ -132,7 +142,7 @@ def walk(p, line):
     return node
 
 trees = [walk(r, l) for l, r in ROOTS]
-trees = [trees[1], trees[0]]   # display Palatnik first
+trees = [trees[0], trees[2], trees[1]]   # Sokolov (lead), Palatnik, Vishnik
 
 # "also married" notes for spouses who married two descendants
 for sp, ps in spouse_of.items():

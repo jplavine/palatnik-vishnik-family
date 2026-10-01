@@ -51,6 +51,7 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .bridge p{margin:0 0 8px;color:var(--ink)}
 .linkbtn{background:none;border:0;padding:0;color:var(--pal);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;cursor:pointer;font-weight:500}
 .linkbtn.v{color:var(--vis)}
+.linkbtn.lead-link{color:var(--vis);font-weight:700}
 .spell{font-size:12.5px;color:var(--muted);margin:0}
 
 /* toolbar */
@@ -79,12 +80,17 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .layer{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0}
 .layer > .node{position:absolute}
 .link{fill:none;stroke-width:1.4}
+.link.S{stroke:color-mix(in srgb,var(--bridge) 60%,transparent)} .link.S.on{stroke:var(--bridge)}
 .link.P{stroke:color-mix(in srgb,var(--pal) 55%,transparent)} .link.V{stroke:color-mix(in srgb,var(--vis) 55%,transparent)}
 .link.ref{stroke:var(--bridge);stroke-dasharray:4 4}
 .link.on{stroke-width:2.6} .link.P.on{stroke:var(--pal)} .link.V.on{stroke:var(--vis)}
 .genlabel{font-family:var(--sans);font-size:11px;letter-spacing:.12em;text-transform:uppercase;fill:var(--muted)}
 .node{font-family:var(--sans)}
 .card{position:absolute;inset:0 16px 0 0;display:block;text-align:left;background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:6px 10px 6px 10px;cursor:pointer;overflow:hidden;box-shadow:0 1px 0 rgb(0 0 0 / .04)}
+.S .card{border-color:color-mix(in srgb,var(--bridge) 50%,var(--rule))}
+.S .card:hover{color:var(--bridge)}
+.lead .card{border:2px solid var(--vis);background:color-mix(in srgb,var(--vis) 7%,var(--surface))}
+.lead .card .c-name{font-size:19px;line-height:23px;color:var(--vis)}
 .P .card{border-color:color-mix(in srgb,var(--pal) 40%,var(--rule))}
 .V .card{border-color:color-mix(in srgb,var(--vis) 40%,var(--rule))}
 .card:hover{border-color:currentColor}
@@ -130,12 +136,12 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .crumbs{display:flex;flex-wrap:wrap;gap:2px 4px;font-size:12.5px;align-items:baseline}
 .crumbs .sep{color:var(--muted)}
 .tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:3px;border:1px solid currentColor}
-.tag.P{color:var(--pal)} .tag.V{color:var(--vis)}
+.tag.S{color:var(--bridge)} .tag.P{color:var(--pal)} .tag.V{color:var(--vis)}
 
 /* list */
 .list{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:18px clamp(12px,2vw,24px)}
 .list h2{font-family:var(--serif);font-size:24px;margin:0 0 2px;font-weight:600}
-.list h2.P{color:var(--pal)} .list h2.V{color:var(--vis)}
+.list h2.S{color:var(--bridge)} .list h2.P{color:var(--pal)} .list h2.V{color:var(--vis)}
 .list .root-sub{color:var(--muted);margin:0 0 12px;font-size:13px}
 .list + .list{margin-top:0}
 .lv ul{list-style:none;margin:0;padding-left:22px;border-left:1px solid var(--rule)}
@@ -150,6 +156,7 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .row .refnote{grid-column:2;font-size:12.5px;color:var(--bridge)}
 .row button.who{background:none;border:0;padding:0;cursor:pointer;text-align:left}
 .row button.who:hover{text-decoration:underline}
+.row .who.lead-name{color:var(--vis);font-size:19px;font-weight:700}
 .lists{display:flex;flex-direction:column;gap:16px}
 .note{font-size:12.5px;color:var(--muted);margin:0}
 
@@ -183,16 +190,16 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
   </figure>
   <header>
     <div>
-      <p class="eyebrow">Descendants of two families from Teplik, Ukraine</p>
+      <p class="eyebrow">The family of Sarah (Sura) Sokolov of Teplik, Ukraine</p>
       <h1><span class="p">Palatnik</span> <span class="amp">&amp;</span> <span class="v">Vishnik</span></h1>
-      <p class="lede">Every descendant of <strong>David Palatnik</strong> (c. 1780 – before 1820) and <strong>Yankel Meir Vishnik</strong> (b. 1819), with the people they married.</p>
+      <p class="lede">At the center is <button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button> (c. 1872–1951). Through her two marriages she is the ancestor of most of the family at the reunion. Her parents and her brother's family sit around her, with the wider Palatnik line above and the Vishnik line below.</p>
       <ul class="facts" id="facts"></ul>
     </div>
     <aside class="bridge" aria-label="How the two families connect">
       <h2>Where the families meet</h2>
-      <p><button class="linkbtn" data-goto="sara-v">Sara Sura Sokolov</button> (c. 1872–1951) married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pincus (Philip) Palat</button>. Her son <button class="linkbtn v" data-goto="hymen">Hymen Veshnock</button> was half-brother to <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
-      <p>Her son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pincus's daughter <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>. Their children descend from both families and are listed in the Vishnik line.</p>
-      <p class="spell">Names are spelled as recorded: Palatnik, Palat, Palatt, Pallot, Polatin · Vishnik, Vishnak, Veshnack, Veshnock, Westock.</p>
+      <p><button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button>, daughter of Samuel Sokolow and Annie Becker?, married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pincus (Philip) Palat</button>. Her son <button class="linkbtn v" data-goto="hymen">Hymen Veshnock</button> was half-brother to <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
+      <p>Her son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pincus's daughter <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>, joining the two lines again. All of Sarah's descendants are listed under her.</p>
+      <p class="spell">Names are spelled as recorded: Sokolov, Sokolow, Sokoloff · Palatnik, Palat, Palatt, Pallot, Polatin · Vishnik, Vishnak, Veshnack, Veshnock, Westock.</p>
     </aside>
   </header>
 
@@ -202,7 +209,8 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
       <button id="v-list" aria-pressed="false">List</button>
     </div>
     <div class="seg" role="group" aria-label="Family line">
-      <button data-line="all" aria-pressed="true">Both lines</button>
+      <button data-line="all" aria-pressed="true">All</button>
+      <button data-line="S" aria-pressed="false">Sokolov</button>
       <button data-line="P" aria-pressed="false">Palatnik</button>
       <button data-line="V" aria-pressed="false">Vishnik</button>
     </div>
@@ -237,7 +245,9 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
 (function(){
 const COLW=362, CARDW=336, GAP=10;
 const RAW = JSON.parse(document.getElementById('data').textContent);
-const LINE_NAME = {P:'Palatnik line', V:'Vishnik line'};
+const LINE_NAME = {S:'Sokolov family', P:'Palatnik line', V:'Vishnik line'};
+const LINE_NUM = {S:'1', P:'2', V:'3'};
+const TREE_ORDER = ['P','S','V'];   // Sarah's family in the middle
 const byKey = new Map();          // key -> raw node
 const people = [];                // search index
 
@@ -261,7 +271,7 @@ function life(p){
   return p.deceased ? 'Deceased' : '';
 }
 function numLabel(n){ return n.step ? ({M:'Stepson',F:'Stepdaughter'}[n.sex]||'Stepchild') : n.num; }
-function kidsAtText(n){ const t=n.kidsAt&&findByIdPrimary(n.kidsAt); return t ? `Children listed with ${t.name} (${t.num})` : ''; }
+function kidsAtText(n){ const t=n.kidsAt&&findByIdPrimary(n.kidsAt); return t ? `Children with ${t.name} are listed at ${t.num}` : ''; }
 const STATES={Alabama:'AL',Arizona:'AZ',California:'CA',Colorado:'CO',Connecticut:'CT',Delaware:'DE',Florida:'FL',Georgia:'GA',Illinois:'IL',Maryland:'MD',Massachusetts:'MA',Michigan:'MI',Minnesota:'MN',Missouri:'MO','New Jersey':'NJ','New York':'NY','North Carolina':'NC',Ohio:'OH',Oregon:'OR',Pennsylvania:'PA','South Carolina':'SC',Texas:'TX',Utah:'UT',Virginia:'VA',Washington:'WA','District of Columbia':'DC',Nevada:'NV',Georgia:'GA'};
 function shortPlace(s){
   if(!s) return '';
@@ -288,7 +298,7 @@ function cardHeight(n){
   const inner=CARDW-16-22;
   const lines=(len,px)=>Math.max(1,Math.ceil(len*px/inner));
   const numW=(n.step?11:(n.num||'').length)+ (n.mi?4:0) + 2;
-  let h=14 + lines(n.name.length+numW, 7.9)*18;
+  let h=14 + (n.lead ? lines(n.name.length+numW, 10.2)*23 + 4 : lines(n.name.length+numW, 7.9)*18);
   if(n.ref) return h+20;
   const lt=[life(n),shortPlace(n.bp)].filter(Boolean).join(' · ');
   if(lt) h+=lines(lt.length,6.5)*17;
@@ -297,7 +307,7 @@ function cardHeight(n){
   return h+2;
 }
 const lines=['P','V'];
-RAW.forEach((t,i)=>prep(t, i===0?'P':'V', String(i+1), 1, null));
+RAW.forEach(t=>prep(t, t.line, LINE_NUM[t.line], 1, null));
 
 // other parent for each child
 byKey.forEach(n=>{
@@ -329,7 +339,7 @@ function hiddenCount(n){ let c=0; (n.kids||[]).forEach(k=>{ c++; c+=hiddenCount(
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 function render(){
-  const roots = RAW.filter(r=> lineFilter==='all' || r.line===lineFilter);
+  const roots = TREE_ORDER.map(l=>RAW.find(r=>r.line===l)).filter(r=> r && (lineFilter==='all' || r.line===lineFilter));
   const top = {key:'__root', kids:roots, h:0};
   const root = d3.hierarchy(top, d => d.key!=='__root' && collapsed.has(d.key) ? null : d.kids);
   d3.tree().nodeSize([1,COLW]).separation((a,b)=> (a.data.h+b.data.h)/2 + (a.parent===b.parent?GAP:GAP*2.4))(root);
@@ -364,7 +374,7 @@ function render(){
 }
 
 function nodeClass(n){
-  const cls=['node',n.line]; if(n.ref) cls.push('ref'); if(n.key===selectedKey) cls.push('sel');
+  const cls=['node',n.line]; if(n.ref) cls.push('ref'); if(n.lead) cls.push('lead'); if(n.key===selectedKey) cls.push('sel');
   return cls.join(' ');
 }
 function nodeHTML(n){
@@ -470,7 +480,7 @@ document.addEventListener('click',e=>{
 
 // bridge links
 const bridgeTargets={
-  'sara-v':()=>keyWhere(n=>n.name.startsWith('Asher Zelig')),
+  'sarah':()=>keyWhere(n=>n.lead),
   'asher':()=>keyWhere(n=>n.name.startsWith('Asher Zelig')),
   'pincus':()=>keyWhere(n=>n.name.startsWith('Pincus')),
   'hymen':()=>keyWhere(n=>n.name.startsWith('Hymen') && !n.ref),
@@ -524,7 +534,7 @@ function rowHTML(n){
   if(n.ref){ const t=findByIdPrimary(n.id); return `<li><div class="row"><span class="num"></span><span><span class="who" style="font-weight:400">${esc(n.name)}</span></span><span class="refnote">Stepchild · listed in full at ${esc(t?t.num:'')}</span></div></li>`; }
   const sp=(n.sp||[]);
   const place=shortPlace(n.bp);
-  return `<li><div class="row"><span class="num">${esc(n.step?numLabel(n):n.num)}</span><span><button class="who" data-goto-key="${esc(n.key)}">${esc(n.name)}</button> <span class="life">${esc([life(n),place].filter(Boolean).join(' · '))}</span></span>
+  return `<li><div class="row"><span class="num">${esc(n.step?numLabel(n):n.num)}</span><span><button class="who${n.lead?' lead-name':''}" data-goto-key="${esc(n.key)}">${esc(n.name)}</button> <span class="life">${esc([life(n),place].filter(Boolean).join(' · '))}</span></span>
     ${sp.length?`<div class="sps">${sp.map((s,i)=>`<span class="m">⚭${sp.length>1?s.fi:''}</span> <span class="${s.also&&s.also.length?'sp-bridge':''}">${esc(s.name)}${life(s)?` <span class="life">${esc(life(s))}</span>`:''}</span>`).join('&nbsp;&nbsp; ')}</div>`:''}
     ${n.fate?`<div class="fate">${esc(n.fate)}</div>`:''}${n.note?`<div class="note">${esc(n.note)}</div>`:''}${n.kidsAt?`<div class="note">${esc(kidsAtText(n))}</div>`:''}
     </div>${(n.kids||[]).length?`<ul>${n.kids.map(rowHTML).join('')}</ul>`:''}</li>`;
@@ -533,7 +543,7 @@ function renderLists(){
   const roots=RAW.filter(r=> lineFilter==='all' || r.line===lineFilter);
   document.getElementById('lists').innerHTML = roots.map(r=>`
     <section class="list"><h2 class="${r.line}">${LINE_NAME[r.line]}</h2>
-    <p class="root-sub">Descendants of ${esc(r.name)}. Numbers follow the d'Aboville system: each digit is a child's birth order within the family.</p>
+    <p class="root-sub">${(s=>s.endsWith('?')?s:s+'.')('Descendants of '+esc(r.name)+((r.sp||[]).length?' and '+r.sp.map(s=>esc(s.name)).join(' and '):''))} Numbers follow the d'Aboville system: each digit is a child's birth order within the family.</p>
     <div class="lv"><ul>${rowHTML(r)}</ul></div></section>`).join('')
     + `<p class="note">Built from the Lavine-Palat Family Tree (Ancestry). Duplicate records for Clara (Chaike) Palatnik's family, Isaac Palatnik, Ida Nemez and Robert Sol Lanman were merged.</p>`;
 }
@@ -569,8 +579,8 @@ let v='tree'; try{ v=localStorage.getItem('pv-view')||'tree'; }catch(e){}
 showView(v);
 requestAnimationFrame(()=>{
   const k=0.82, box=document.getElementById('stage').getBoundingClientRect();
-  const d=lastRoot.descendants().find(d=>d.depth===1);
-  if(d) svg.call(zoom.transform, d3.zoomIdentity.translate(24, box.height*0.45 - d.x*k).scale(k));
+  const d=lastRoot.descendants().find(d=>d.data.lead) || lastRoot.descendants().find(d=>d.depth===1);
+  if(d) svg.call(zoom.transform, d3.zoomIdentity.translate(Math.min(box.width*0.3, 240) - (d.depth-1)*COLW*k, box.height*0.5 - d.x*k).scale(k));
 });
 })();
 </script>
