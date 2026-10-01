@@ -93,11 +93,16 @@ if os.path.exists(add_path):
             if k in extra: I[pid]['birt' if k[0] == 'b' else 'deat']['date' if len(k) == 1 else 'plac'] = extra[k]
         I[pid]['extra'].update({k: v for k, v in extra.items() if k in ('note', 'fate', 'deceased')})
 
-# Sarah (Sura) Sokolov leads the tree: her descendants by both marriages are listed under her,
-# inside the Sokolov family (her parents and her siblings' families).
-SARAH = 'I262525311332'
-for f in I[SARAH]['fams']: FAM_HOME[f] = SARAH
-ROOTS = [('S', 'I262525318119'), ('V', 'I262798668669'), ('P', 'I262539792216')]   # walk Sokolov first
+# Four views: Sarah (Sura) Sokolov, Pinchas (Pincus) Palat, Asher Zelig Veshnack, and the wider family.
+SARAH, PINCUS, ASHER, HYMEN = 'I262525311332', 'I262525311317', 'I262525318130', 'I262525317573'
+# Hymen is Asher's son; Ancestry also lists him in Pincus + Sarah's family.
+f = find_fam(PINCUS, SARAH)
+if f and HYMEN in F[f]['chil']:
+    F[f]['chil'].remove(HYMEN); I[HYMEN]['famc'] = [x for x in I[HYMEN]['famc'] if x != f]
+WIDER_HOME = {f: SARAH for f in I[SARAH]['fams']}
+WIDER_HOME.update(FAM_HOME)
+WIDER = [('S', 'I262525318119'), ('P', 'I262539792216'), ('V', 'I262798668669')]
+
 def clean(n): return re.sub(r'\s+', ' ', n.replace('/', ' ')).strip()
 def bad(s): return (not s) or set(s) <= set('?-– ')
 def info(p):
@@ -109,62 +114,70 @@ def info(p):
 def yr(s):
     m = re.search(r'(\d{4})', s or ''); return int(m[1]) if m else 9999
 
-seen = {}; spouse_of = collections.defaultdict(list)
-def walk(p, line):
-    node = info(p); node['line'] = line
-    if p in seen:
-        node['ref'] = seen[p]; return node
-    seen[p] = line
-    shared = collections.Counter(c for f in I[p]['fams'] if f in F for c in F[f]['chil'])
-    def fam_order(fm):   # order marriages by their earliest child found only in that marriage
-        first = 'first' in (I.get(fm['wife'] or '', {}).get('name', '') + I.get(fm['husb'] or '', {}).get('name', ''))
-        return (0 if first else 1, min([yr(I[c]['birt'].get('date')) for c in fm['chil'] if c in I and shared[c] == 1] + [9999]))
-    fams = sorted([F[f] for f in I[p]['fams'] if f in F], key=fam_order)
-    with_sp = [fm for fm in fams if (fm['wife'] if fm['husb'] == p else fm['husb']) in I]
-    node['sp'] = []; node['kids'] = []; listed = set()
-    if p == SARAH: node['lead'] = True
-    for i, fm in enumerate(fams):
-        sp = fm['wife'] if fm['husb'] == p else fm['husb']
-        if sp and sp in I:
-            s = info(sp); s['marr'] = fm['marr'].get('date', ''); s['fi'] = i + 1; node['sp'].append(s); spouse_of[sp].append(p)
-        home = FAM_HOME.get(fm['id'])
-        if home and home != p:
-            node['kidsAt'] = home
-            continue
-        kids = sorted([c for c in fm['chil'] if c in I and c not in DROP], key=lambda c: yr(I[c]['birt'].get('date')))
-        for c in kids:
-            if c in listed: continue          # same child recorded in two of this person's families
-            listed.add(c)
-            k = walk(c, line)
-            k['fi'] = i + 1
-            if len(with_sp) > 1 and sp in I: k['mi'] = i + 1
-            node['kids'].append(k)
-    return node
+spouse_of = collections.defaultdict(set)
+def make_walker(home_map):
+    seen = {}
+    def walk(p, line):
+        node = info(p); node['line'] = line
+        if p in seen:
+            node['ref'] = seen[p]; return node
+        seen[p] = line
+        shared = collections.Counter(c for f in I[p]['fams'] if f in F for c in F[f]['chil'])
+        def fam_order(fm):   # order marriages by their earliest child found only in that marriage
+            first = 'first' in (I.get(fm['wife'] or '', {}).get('name', '') + I.get(fm['husb'] or '', {}).get('name', ''))
+            return (0 if first else 1, min([yr(I[c]['birt'].get('date')) for c in fm['chil'] if c in I and shared[c] == 1] + [9999]))
+        fams = sorted([F[f] for f in I[p]['fams'] if f in F], key=fam_order)
+        with_sp = [fm for fm in fams if (fm['wife'] if fm['husb'] == p else fm['husb']) in I]
+        node['sp'] = []; node['kids'] = []; listed = set()
+        if p == SARAH: node['lead'] = True
+        for i, fm in enumerate(fams):
+            sp = fm['wife'] if fm['husb'] == p else fm['husb']
+            if sp and sp in I:
+                s = info(sp); s['marr'] = fm['marr'].get('date', ''); s['fi'] = i + 1; node['sp'].append(s); spouse_of[sp].add(p)
+            home = home_map.get(fm['id'])
+            if home and home != p:
+                node['kidsAt'] = home
+                continue
+            kids = sorted([c for c in fm['chil'] if c in I and c not in DROP], key=lambda c: yr(I[c]['birt'].get('date')))
+            for c in kids:
+                if c in listed: continue          # same child recorded in two of this person's families
+                listed.add(c)
+                k = walk(c, line)
+                k['fi'] = i + 1
+                if len(with_sp) > 1 and sp in I: k['mi'] = i + 1
+                node['kids'].append(k)
+        return node
+    return walk
 
-trees = [walk(r, l) for l, r in ROOTS]
-trees = [trees[0], trees[2], trees[1]]   # Sokolov (lead), Palatnik, Vishnik
+views = {
+    'sarah':   [make_walker({})(SARAH, 'S')],
+    'pinchas': [make_walker({})(PINCUS, 'P')],
+    'asher':   [make_walker({})(ASHER, 'V')],
+}
+w = make_walker(WIDER_HOME)
+views['wider'] = [w(r, l) for l, r in WIDER]
+ALL = [t for ts in views.values() for t in ts]
+def nodes(n):
+    yield n
+    for k in n.get('kids', []): yield from nodes(k)
 
-# "also married" notes for spouses who married two descendants
+# "also married" notes for spouses who married two descendants (Sarah)
 for sp, ps in spouse_of.items():
     if len(ps) > 1:
         names = [I[p].get('literal') or clean(I[p]['name']) for p in ps]
-        def ann(n):
-            for s in n.get('sp', []):
-                if s['id'] == sp: s['also'] = [x for x in names if x != n['name']]
-            for k in n.get('kids', []): ann(k)
-        for t in trees: ann(t)
+        for t in ALL:
+            for n in nodes(t):
+                for s in n.get('sp', []):
+                    if s['id'] == sp: s['also'] = [x for x in names if x != n['name']]
 
-cnt = collections.Counter()
-def col(n):
-    cnt[(n['name'], n['b'])] += 0 if (n.get('ref') or n.get('step')) else 1
-    for k in n.get('kids', []): col(k)
-for t in trees: col(t)
-print('possible dup persons:', [k for k, v in cnt.items() if v > 1])
-def depth(n): return 1 + max([depth(k) for k in n.get('kids', [])] + [0])
-print('descendants', sum(cnt.values()), 'spouses', len(spouse_of), 'gens', max(depth(t) for t in trees))
+for name, ts in views.items():
+    c = collections.Counter((n['name'], n['b']) for t in ts for n in nodes(t) if not n.get('ref'))
+    print(f"{name:8s} descendants {sum(c.values()):4d}   possible dups: {[k for k, v in c.items() if v > 1]}")
 
+out = {'views': views, 'sarah_parents': [info(x) for x in (F[I[SARAH]['famc'][0]]['husb'], F[I[SARAH]['famc'][0]]['wife']) if x],
+       'sarah_siblings': [info(c) for c in F[I[SARAH]['famc'][0]]['chil'] if c != SARAH]}
 if full_out:
-    json.dump(trees, open(full_out, 'w', encoding='utf-8'), ensure_ascii=False)
+    json.dump(out, open(full_out, 'w', encoding='utf-8'), ensure_ascii=False)
     print('wrote', full_out)
 
 # --- privacy: hide names, dates and places of people who may be living ---
@@ -176,32 +189,37 @@ def maybe_living(p, est):
     if p.get('assume_living'): return True
     y = byear(p) or est
     return y is None or y > CUTOFF
+LIVING = set()
+def decide(n, est):   # pass 1: anyone judged possibly living in any view is hidden in every view
+    y = byear(n) or est
+    if maybe_living(n, est): LIVING.add(n['id'])
+    for s in n.get('sp', []):
+        if maybe_living(s, y): LIVING.add(s['id'])
+    kids = n.get('kids', [])
+    known = [byear(k) for k in kids if byear(k)]
+    kid_est = round(sum(known) / len(known)) if known else ((y + 25) if y else None)
+    for k in kids: decide(k, kid_est)
+for t in ALL: decide(t, byear(t) or 1790)
 LIVING_NAMES = set()
 def scrub(p):
     LIVING_NAMES.add(p['name'])
     for k in ('b', 'bp', 'd', 'dp', 'marr', 'note'): p[k] = ''
     p['name'] = 'Living relative'
     p['living'] = True
-hidden = 0
-def priv(n, est):
-    global hidden
-    y = byear(n) or est
-    if maybe_living(n, est): scrub(n); hidden += 1
-    for s in n.get('sp', []):
-        if maybe_living(s, y): scrub(s); hidden += 1
-        elif n.get('living'): s['marr'] = ''
-    kids = n.get('kids', [])
-    known = [byear(k) for k in kids if byear(k)]
-    kid_est = round(sum(known) / len(known)) if known else ((y + 25) if y else None)
-    for k in kids: priv(k, kid_est)
-for t in trees: priv(t, byear(t) or 1790)
-def fix_also(n):
-    for s in n.get('sp', []):
-        if s.get('also'): s['also'] = ['Living relative' if a in LIVING_NAMES else a for a in s['also']]
-    for k in n.get('kids', []): fix_also(k)
-for t in trees: fix_also(t)
-print('hidden details for', hidden, 'possibly living people')
-data = json.dumps(trees, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+for t in ALL:
+    for n in nodes(t):
+        if n['id'] in LIVING: scrub(n)
+        for s in n.get('sp', []):
+            if s['id'] in LIVING: scrub(s)
+            elif n.get('living'): s['marr'] = ''
+for t in ALL:
+    for n in nodes(t):
+        for s in n.get('sp', []):
+            if s.get('also'): s['also'] = ['Living relative' if a in LIVING_NAMES else a for a in s['also']]
+for x in out['sarah_siblings']:
+    if x['id'] in LIVING: scrub(x)
+print('hidden details for', len(LIVING), 'possibly living people')
+data = json.dumps(out, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
 tpl = open(os.path.join(HERE, 'template.html'), encoding='utf-8').read()
 open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf-8').write(tpl.replace('__DATA__', data))
 print('wrote index.html')

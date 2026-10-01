@@ -68,6 +68,9 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .results .r-name{font-family:var(--serif);font-weight:600}
 .results .r-meta{font-size:12px;color:var(--muted);white-space:nowrap}
 .tools{display:inline-flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.seg.tabs button{font-size:14px;padding:7px 14px;font-weight:500}
+.viewnote{margin:-6px 0 0;font-size:14px;color:var(--muted);max-width:80ch}
+.viewnote strong{color:var(--ink)}
 .tbtn{border:1px solid var(--rule);background:var(--surface);border-radius:4px;padding:6px 10px;cursor:pointer;font-size:13px}
 .tbtn:hover{background:var(--sunk)}
 
@@ -118,6 +121,8 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .tog{position:absolute;right:0;top:50%;transform:translateY(-50%);min-width:26px;height:22px;padding:0 5px;border-radius:11px;border:1px solid var(--rule);background:var(--surface);font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);font-variant-numeric:tabular-nums;line-height:20px}
 .tog:hover{color:var(--ink);border-color:var(--ink)}
 .tog.closed{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.genbar{position:absolute;left:0;right:0;top:0;height:30px;z-index:5;pointer-events:none;overflow:hidden;background:linear-gradient(var(--bg) 70%,transparent)}
+.genbar span{position:absolute;top:8px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;font-weight:600}
 .hint{position:absolute;left:10px;bottom:8px;font-size:11.5px;color:var(--muted);background:color-mix(in srgb,var(--bg) 85%,transparent);padding:2px 6px;border-radius:3px;pointer-events:none}
 
 /* detail panel */
@@ -149,6 +154,10 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .lv li{padding:3px 0}
 .row{display:grid;grid-template-columns:auto 1fr;gap:0 10px;align-items:baseline}
 .row .num{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:3.5em}
+.lv.gen .row{grid-template-columns:1fr}
+.lv.gen .row .num{display:none}
+.lv.gen .row > *{grid-column:1}
+.genchip{display:inline-block;margin-left:6px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border:1px solid var(--rule);border-radius:3px;padding:0 5px;vertical-align:1px}
 .row .who{font-family:var(--serif);font-weight:600;font-size:15px}
 .row .life{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
 .row .sps{grid-column:2;font-size:13px}
@@ -192,13 +201,13 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
     <div>
       <p class="eyebrow">The family of Sarah (Sura) Sokolov of Teplik, Ukraine</p>
       <h1><span class="p">Palatnik</span> <span class="amp">&amp;</span> <span class="v">Vishnik</span></h1>
-      <p class="lede">At the center is <button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button> (c. 1872–1951). Through her two marriages she is the ancestor of most of the family at the reunion. Her parents and her brother's family sit around her, with the wider Palatnik line above and the Vishnik line below.</p>
+      <p class="lede">The tree opens on <button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button> (c. 1872–1951), the ancestor of most of the family at the reunion. Use the tabs to see the descendants of her two husbands, Pinchas Palat and Asher Zelig Veshnack, or the wider family.</p>
       <ul class="facts" id="facts"></ul>
     </div>
     <aside class="bridge" aria-label="How the two families connect">
       <h2>Where the families meet</h2>
       <p><button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button>, daughter of Samuel Sokolow and Annie Becker?, married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pincus (Philip) Palat</button>. Her son <button class="linkbtn v" data-goto="hymen">Hymen Veshnock</button> was half-brother to <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
-      <p>Her son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pincus's daughter <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>, joining the two lines again. All of Sarah's descendants are listed under her.</p>
+      <p>Her son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pincus's daughter <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>, joining the two families again.</p>
       <p class="spell">Names are spelled as recorded: Sokolov, Sokolow, Sokoloff · Palatnik, Palat, Palatt, Pallot, Polatin · Vishnik, Vishnak, Veshnack, Veshnock, Westock.</p>
     </aside>
   </header>
@@ -208,11 +217,11 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
       <button id="v-tree" aria-pressed="true">Tree</button>
       <button id="v-list" aria-pressed="false">List</button>
     </div>
-    <div class="seg" role="group" aria-label="Family line">
-      <button data-line="all" aria-pressed="true">All</button>
-      <button data-line="S" aria-pressed="false">Sokolov</button>
-      <button data-line="P" aria-pressed="false">Palatnik</button>
-      <button data-line="V" aria-pressed="false">Vishnik</button>
+    <div class="seg tabs" role="group" aria-label="Whose family">
+      <button data-tab="sarah" aria-pressed="true">Sarah</button>
+      <button data-tab="pinchas" aria-pressed="false">Pinchas</button>
+      <button data-tab="asher" aria-pressed="false">Asher Zelig</button>
+      <button data-tab="wider" aria-pressed="false">Wider family</button>
     </div>
     <div class="search">
       <label for="q" class="eyebrow" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Find a person</label>
@@ -228,9 +237,11 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
     </div>
   </div>
 
+  <p class="viewnote" id="viewnote"></p>
   <div class="stage" id="stage">
     <svg id="svg" aria-hidden="true"><g id="zoomg"><g id="labels"></g><g id="links"></g></g></svg>
     <div class="layer" id="layer" role="group" aria-label="Family tree"></div>
+    <div class="genbar" id="genbar" aria-hidden="true"></div>
     <div class="hint">Drag to move · pinch or ⌘/Ctrl + scroll to zoom · click a card for details</div>
     <aside class="panel" id="panel" hidden aria-live="polite"></aside>
   </div>
@@ -244,10 +255,37 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
 <script>
 (function(){
 const COLW=362, CARDW=336, GAP=10;
-const RAW = JSON.parse(document.getElementById('data').textContent);
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const VIEWS = DATA.views;
+const VIEW_META = {
+  sarah:   {label:'Sarah', root:'Sarah', title:'Descendants of Sarah (Sura) Sokolov'},
+  pinchas: {label:'Pinchas', root:'Pinchas', title:'Descendants of Pinchas (Pincus) Palat'},
+  asher:   {label:'Asher Zelig', root:'Asher Zelig', title:'Descendants of Asher Zelig Veshnack'},
+  wider:   {label:'Wider family', title:'The wider family', numbered:true},
+};
 const LINE_NAME = {S:'Sokolov family', P:'Palatnik line', V:'Vishnik line'};
 const LINE_NUM = {S:'1', P:'2', V:'3'};
-const TREE_ORDER = ['P','S','V'];   // Sarah's family in the middle
+const WIDER_TREE_ORDER = ['P','S','V'];   // Sarah's family in the middle
+let currentView = 'sarah';
+const parentsTxt = DATA.sarah_parents.map(p=>p.name).join(' and ');
+const sibsTxt = DATA.sarah_siblings.map(p=>p.name).join(', ');
+const VIEW_NOTE = {
+  sarah: `<strong>Sarah (Sura) Sokolov</strong>, daughter of ${parentsTxt}${sibsTxt?` and sister of ${sibsTxt}`:''}. Her children with Asher Zelig Veshnack come first, then her children with Pinchas Palat.`,
+  pinchas: `<strong>Pinchas (Pincus) Palat</strong> had children with his first wife and with Sarah (Sura) Sokolov.`,
+  asher: `<strong>Asher Zelig Veshnack</strong> and Sarah (Sura) Sokolov had six children. Asher died before 1899.`,
+  wider: `The complete Sokolov, Palatnik and Vishnik lines, numbered in the d'Aboville system. Sarah's family is in the middle.`,
+};
+function genPlural(view, depth){
+  const r=VIEW_META[view].root;
+  if(depth===1) return r; if(depth===2) return r+'’s children'; if(depth===3) return 'Grandchildren';
+  if(depth===4) return 'Great-grandchildren'; if(depth===5) return 'Great-great-grandchildren';
+  return (depth-3)+'× great-grandchildren';
+}
+function genSingular(depth){
+  if(depth<=1) return ''; if(depth===2) return 'Child'; if(depth===3) return 'Grandchild';
+  if(depth===4) return 'Great-grandchild'; if(depth===5) return 'Great-great-grandchild';
+  return (depth-3)+'× great-grandchild';
+}
 const byKey = new Map();          // key -> raw node
 const people = [];                // search index
 
@@ -270,8 +308,9 @@ function life(p){
   if(d) return 'd. '+d;
   return p.deceased ? 'Deceased' : '';
 }
-function numLabel(n){ return n.step ? ({M:'Stepson',F:'Stepdaughter'}[n.sex]||'Stepchild') : n.num; }
-function kidsAtText(n){ const t=n.kidsAt&&findByIdPrimary(n.kidsAt); return t ? `Children with ${t.name} are listed at ${t.num}` : ''; }
+function numbered(n){ return VIEW_META[n.view].numbered; }
+function numLabel(n){ return n.step ? ({M:'Stepson',F:'Stepdaughter'}[n.sex]||'Stepchild') : numbered(n) ? n.num : ''; }
+function kidsAtText(n){ const t=n.kidsAt&&findByIdPrimary(n.kidsAt, n.view); return t ? `Children with ${t.name} are listed at ${t.num}` : ''; }
 const STATES={Alabama:'AL',Arizona:'AZ',California:'CA',Colorado:'CO',Connecticut:'CT',Delaware:'DE',Florida:'FL',Georgia:'GA',Illinois:'IL',Maryland:'MD',Massachusetts:'MA',Michigan:'MI',Minnesota:'MN',Missouri:'MO','New Jersey':'NJ','New York':'NY','North Carolina':'NC',Ohio:'OH',Oregon:'OR',Pennsylvania:'PA','South Carolina':'SC',Texas:'TX',Utah:'UT',Virginia:'VA',Washington:'WA','District of Columbia':'DC',Nevada:'NV',Georgia:'GA'};
 function shortPlace(s){
   if(!s) return '';
@@ -282,22 +321,22 @@ function shortPlace(s){
   if(STATES[last]) return (parts[0]===last?'':parts[0]+', ')+STATES[last];
   return parts.length>1? parts[0]+', '+last : parts[0];
 }
-function prep(n, line, num, depth, parent){
-  n.line=line; n.num=num; n.depth=depth; n.parent=parent||null;
-  n.key = n.ref ? (parent.key+'~'+n.id) : num;
+function prep(n, view, line, num, depth, parent){
+  n.view=view; n.line=line; n.num=num; n.depth=depth; n.parent=parent||null;
+  n.key = n.ref ? (parent.key+'~'+n.id) : view+':'+num;
   byKey.set(n.key,n);
   if(!n.ref){
-    if(!n.living) people.push({name:n.name, key:n.key, desc:true, line, life:life(n), num});
-    (n.sp||[]).forEach(s=>{ if(!s.living) people.push({name:s.name, key:n.key, desc:false, line, life:life(s), num, via:n.name}); });
+    if(!n.living) people.push({name:n.name, key:n.key, view, desc:true, depth, life:life(n), num});
+    (n.sp||[]).forEach(s=>{ if(!s.living) people.push({name:s.name, key:n.key, view, desc:false, life:life(s), num, via:n.name}); });
   }
   let i=0;
-  (n.kids||[]).forEach(k=>{ const kn = k.ref ? num+'~' : k.step ? num+'~s'+k.id : num+'.'+(++i); prep(k,line,kn,depth+1,n); });
+  (n.kids||[]).forEach(k=>{ const kn = k.ref ? num+'~' : k.step ? num+'~s'+k.id : num+'.'+(++i); prep(k,view,line,kn,depth+1,n); });
   n.h = cardHeight(n);
 }
 function cardHeight(n){
   const inner=CARDW-16-22;
   const lines=(len,px)=>Math.max(1,Math.ceil(len*px/inner));
-  const numW=(n.step?11:(n.num||'').length)+ (n.mi?4:0) + 2;
+  const numW=(n.step?11:(VIEW_META[n.view].numbered?(n.num||'').length:0))+ (n.mi?4:0) + 2;
   let h=14 + (n.lead ? lines(n.name.length+numW, 10.2)*23 + 4 : lines(n.name.length+numW, 7.9)*18);
   if(n.ref) return h+20;
   const lt=[life(n),shortPlace(n.bp)].filter(Boolean).join(' · ');
@@ -306,8 +345,7 @@ function cardHeight(n){
   (n.sp||[]).forEach(s=>{ h+= (s.also&&s.also.length) ? 6+lines((s.name+' '+life(s)).length+3,7.9)*18 : 6+lines((s.name+' '+life(s)).length+3,6.6)*17; });
   return h+2;
 }
-const lines=['P','V'];
-RAW.forEach(t=>prep(t, t.line, LINE_NUM[t.line], 1, null));
+Object.entries(VIEWS).forEach(([view,roots])=>roots.forEach(t=>prep(t, view, t.line, view==='wider'?LINE_NUM[t.line]:'1', 1, null)));
 
 // other parent for each child
 byKey.forEach(n=>{
@@ -318,20 +356,24 @@ byKey.forEach(n=>{
 
 // ---------- facts ----------
 (function(){
-  let desc=0, spouses=new Set(), gens=0, maxY=0;
-  byKey.forEach(n=>{ if(n.ref||n.step) return; desc++; gens=Math.max(gens,n.depth); (n.sp||[]).forEach(s=>spouses.add(s.id)); const y=yearOf(n.b); if(y&&y>maxY) maxY=y; });
+  const count=view=>{ let d=0,g=0; byKey.forEach(n=>{ if(n.view!==view||n.ref||n.step) return; d++; g=Math.max(g,n.depth); }); return [d,g]; };
+  const [sd,sg]=count('sarah'), [wd]=count('wider');
   document.getElementById('facts').innerHTML =
-    `<li><b>${desc}</b>descendants</li><li><b>${spouses.size}</b>spouses</li><li><b>${gens}</b>generations</li><li><b>1819–${maxY}</b>recorded births</li>`;
+    `<li><b>${sd-1}</b>descendants of Sarah</li><li><b>${sg}</b>generations</li><li><b>${wd}</b>people in the wider family</li>`;
 })();
 
 // ---------- tree ----------
 const collapsed=new Set();
-let lineFilter='all', selectedKey=null;
+let selectedKey=null;
 const stage=d3.select('#stage'), zg=d3.select('#zoomg'), layer=document.getElementById('layer');
 const svg=stage;
 const zoom=d3.zoom().scaleExtent([0.15,2.2])
   .filter(e=> !e.target.closest('.panel') && (e.type==='wheel' ? (e.ctrlKey||e.metaKey) : !e.button))
-  .on('zoom',e=>{ const t=e.transform; zg.attr('transform',t); layer.style.transform=`translate(${t.x}px,${t.y}px) scale(${t.k})`; });
+  .on('zoom',e=>{ const t=e.transform; zg.attr('transform',t); layer.style.transform=`translate(${t.x}px,${t.y}px) scale(${t.k})`; placeGenbar(t); });
+function placeGenbar(t){
+  t=t||d3.zoomTransform(stage.node());
+  document.querySelectorAll('#genbar span').forEach(s=>{ s.style.left=(t.x+(+s.dataset.d-1)*COLW*t.k+4)+'px'; });
+}
 stage.call(zoom).on('dblclick.zoom',null);
 let lastRoot=null;
 
@@ -339,7 +381,8 @@ function hiddenCount(n){ let c=0; (n.kids||[]).forEach(k=>{ c++; c+=hiddenCount(
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 function render(){
-  const roots = TREE_ORDER.map(l=>RAW.find(r=>r.line===l)).filter(r=> r && (lineFilter==='all' || r.line===lineFilter));
+  const vs=VIEWS[currentView];
+  const roots = currentView==='wider' ? WIDER_TREE_ORDER.map(l=>vs.find(r=>r.line===l)).filter(Boolean) : vs;
   const top = {key:'__root', kids:roots, h:0};
   const root = d3.hierarchy(top, d => d.key!=='__root' && collapsed.has(d.key) ? null : d.kids);
   d3.tree().nodeSize([1,COLW]).separation((a,b)=> (a.data.h+b.data.h)/2 + (a.parent===b.parent?GAP:GAP*2.4))(root);
@@ -352,9 +395,8 @@ function render(){
   let minX=Infinity; nodes.forEach(d=>minX=Math.min(minX,d.x-d.data.h/2));
   const maxDepth=d3.max(nodes,d=>d.depth)||1;
   const roman=['I','II','III','IV','V','VI','VII','VIII','IX'];
-  zg.select('#labels').selectAll('text').data(d3.range(1,maxDepth+1)).join('text')
-    .attr('class','genlabel').attr('x',d=>(d-1)*COLW).attr('y',minX-18)
-    .text(d=>'Generation '+roman[d-1]);
+  document.getElementById('genbar').innerHTML=d3.range(1,maxDepth+1).map(d=>`<span data-d="${d}">${esc(currentView==='wider' ? 'Generation '+roman[d-1] : genPlural(currentView,d))}</span>`).join('');
+  placeGenbar();
 
   // links
   const links=root.links().filter(l=>l.source.depth>0);
@@ -380,7 +422,7 @@ function nodeClass(n){
 function nodeHTML(n){
   let inner;
   if(n.ref){
-    const tgt=findByIdPrimary(n.id);
+    const tgt=findByIdPrimary(n.id, n.view);
     inner=`<button class="card" data-key="${esc(n.key)}" data-jump="${esc(tgt?tgt.key:'')}">
       <div class="c-top"><span class="c-name">${esc(n.name)}</span></div>
       <div class="c-ref">Shown in full at ${esc(tgt?tgt.num:'')} →</div></button>`;
@@ -392,8 +434,8 @@ function nodeHTML(n){
 
     const place=shortPlace(n.bp);
     const lifeTxt=[life(n),place].filter(Boolean).join(' · ');
-    inner=`<button class="card" data-key="${esc(n.key)}" aria-label="${esc(n.name)}, ${esc(numLabel(n))}">
-      <div class="c-top"><span class="c-name">${esc(n.name)}</span><span class="c-num">${esc(numLabel(n))}${n.mi&&multi_parent(n)?' · ⚭'+n.mi:''}</span></div>
+    inner=`<button class="card" data-key="${esc(n.key)}" aria-label="${esc(n.name)}">
+      <div class="c-top"><span class="c-name">${esc(n.name)}</span><span class="c-num">${esc([numLabel(n), n.mi&&multi_parent(n)?'⚭'+n.mi:''].filter(Boolean).join(' · '))}</span></div>
       ${lifeTxt?`<div class="c-life">${esc(lifeTxt)}</div>`:''}${n.fate?`<div class="c-fate">${esc(n.fate)}</div>`:''}${n.note?`<div class="c-note">${esc(n.note)}</div>`:''}${n.kidsAt?`<div class="c-note">${esc(kidsAtText(n))}</div>`:''}${spHTML}</button>`;
     if((n.kids||[]).length){
       const c=collapsed.has(n.key);
@@ -403,7 +445,7 @@ function nodeHTML(n){
   return inner;
 }
 function multi_parent(n){ return n.parent && (n.parent.sp||[]).length>1; }
-function findByIdPrimary(id){ for(const n of byKey.values()){ if(n.id===id && !n.ref) return n; } return null; }
+function findByIdPrimary(id, view){ for(const n of byKey.values()){ if(n.id===id && !n.ref && (!view||n.view===view)) return n; } return null; }
 
 
 // ---------- interactions ----------
@@ -418,11 +460,11 @@ function select(key, keepView){
 }
 function reveal(key){
   let n=byKey.get(key)?.parent; while(n){ collapsed.delete(n.key); n=n.parent; }
-  const node=byKey.get(key);
-  if(lineFilter!=='all' && node && node.line!==lineFilter) setLine('all');
 }
 function focusKey(key, opts={}){
   if(!byKey.has(key)) return;
+  const node=byKey.get(key);
+  if(node.view!==currentView) setView(node.view, true);
   showView('tree');
   reveal(key); selectedKey=key; render();
   const d=lastRoot.descendants().find(d=>d.data.key===key); if(!d) return;
@@ -452,10 +494,10 @@ function showPanel(n){
   const sp=n.sp||[];
   const kids=(n.kids||[]).filter(k=>!k.ref&&!k.step);
   const refs=(n.kids||[]).filter(k=>k.ref||k.step);
-  const home=n.kidsAt&&findByIdPrimary(n.kidsAt);
+  const home=n.kidsAt&&findByIdPrimary(n.kidsAt, n.view);
   const where=(d,pl)=>[d, pl].filter(Boolean).map(esc).join('<br><span class="sub">')+(d&&pl?'</span>':'');
   panel.innerHTML=`
-    <div class="panel-head"><div><div class="pnum">${n.step?esc(numLabel(n)):'No. '+esc(n.num)} · <span class="tag ${n.line}">${LINE_NAME[n.line]}</span></div><h3>${esc(n.name)}</h3></div>
+    <div class="panel-head"><div><div class="pnum">${numbered(n) ? (n.step?esc(numLabel(n)):'No. '+esc(n.num))+` · <span class="tag ${n.line}">${LINE_NAME[n.line]}</span>` : esc(n.step?numLabel(n):(n.depth>1?genSingular(n.depth)+' of '+VIEW_META[n.view].root:VIEW_META[n.view].label+'’s family'))}</div><h3>${esc(n.name)}</h3></div>
       <button class="x" id="closep" aria-label="Close details">×</button></div>
     <div class="panel-body">
       ${n.fate?`<p class="fate">${esc(n.fate)}</p>`:''}${n.note?`<p class="pnote">${esc(n.note)}</p>`:''}
@@ -467,7 +509,7 @@ function showPanel(n){
       </dl>
       ${sp.length?`<section><h4>Married</h4><ul>${sp.map(s=>`<li>${esc(s.name)}${life(s)?` <span class="sub">${esc(life(s))}</span>`:''}${s.marr?`<br><span class="sub">m. ${esc(s.marr)}</span>`:''}${s.also&&s.also.length?`<br><span class="sub">Also married ${s.also.map(esc).join(', ')}</span>`:''}</li>`).join('')}</ul></section>`:''}
       ${kids.length?`<section><h4>Children (${kids.length})</h4><ol>${kids.map(k=>`<li>${personLink(k)} <span class="sub">${esc(life(k))}</span></li>`).join('')}</ol></section>`:''}
-      ${refs.length?`<section><h4>Stepchildren</h4><ul>${refs.map(r=>{const t=r.step?r:findByIdPrimary(r.id);return `<li>${t?personLink(t):esc(r.name)}</li>`}).join('')}</ul></section>`:''}
+      ${refs.length?`<section><h4>Stepchildren</h4><ul>${refs.map(r=>{const t=r.step?r:findByIdPrimary(r.id, r.view);return `<li>${t?personLink(t):esc(r.name)}</li>`}).join('')}</ul></section>`:''}
       ${home?`<section><h4>Children</h4><p class="pnote" style="font-style:normal">Listed with ${personLink(home)} (${esc(home.num)})</p></section>`:''}
       <section><h4>Line of descent</h4><div class="crumbs">${chain.map((c,i)=>(i?'<span class="sep">›</span>':'')+personLink(c)).join('')}</div></section>
     </div>`;
@@ -489,21 +531,33 @@ const bridgeTargets={
   'yankl':()=>keyWhere(n=>n.name.startsWith('Yankl Vishnak')),
   'chaya':()=>keyWhere(n=>n.name==='Chaya Palatnik'),
 };
-function keyWhere(f){ for(const n of byKey.values()) if(f(n)) return n.key; return null; }
+function keyWhere(f){
+  for(const v of [currentView,'sarah','pinchas','asher','wider']) for(const n of byKey.values()) if(n.view===v && !n.ref && f(n)) return n.key;
+  return null;
+}
 document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>{ const k=bridgeTargets[b.dataset.goto](); if(k) focusKey(k); }));
 
 // ---------- toolbar ----------
-function setLine(l){
-  lineFilter=l;
-  document.querySelectorAll('[data-line]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.line===l)));
+function setView(v, keepPosition){
+  currentView=v; selectedKey=null; panel.hidden=true;
+  document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tab===v)));
+  document.getElementById('viewnote').innerHTML=VIEW_NOTE[v];
   render(); renderLists();
+  if(!keepPosition) home();
+  try{ localStorage.setItem('pv-tab',v); }catch(e){}
 }
-document.querySelectorAll('[data-line]').forEach(b=>b.addEventListener('click',()=>{ setLine(b.dataset.line); fit(); }));
+function home(){
+  const box=document.getElementById('stage').getBoundingClientRect(); if(!box.width) return;
+  const k=0.82;
+  const d=lastRoot.descendants().find(d=>d.data.lead) || lastRoot.descendants().find(d=>d.depth===1);
+  if(d) svg.call(zoom.transform, d3.zoomIdentity.translate(Math.min(box.width*0.1, 40) + 20 - (d.depth-1)*COLW*k, box.height*0.5 - d.x*k).scale(k));
+}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.tab)));
 document.getElementById('zin').onclick=()=>svg.transition().duration(200).call(zoom.scaleBy,1.25);
 document.getElementById('zout').onclick=()=>svg.transition().duration(200).call(zoom.scaleBy,0.8);
 document.getElementById('fit').onclick=()=>fit();
 document.getElementById('expand').onclick=()=>{ collapsed.clear(); render(); fit(); };
-document.getElementById('collapse').onclick=()=>{ collapsed.clear(); byKey.forEach(n=>{ if(n.depth===3 && (n.kids||[]).length) collapsed.add(n.key); }); render(); fit(); };
+document.getElementById('collapse').onclick=()=>{ collapsed.clear(); byKey.forEach(n=>{ if(n.view===currentView && n.depth===3 && (n.kids||[]).length) collapsed.add(n.key); }); render(); fit(); };
 function fit(){
   const ns=lastRoot?lastRoot.descendants().filter(d=>d.depth>0):[];
   if(!ns.length) return;
@@ -531,16 +585,23 @@ document.getElementById('v-list').onclick=()=>showView('list');
 
 // ---------- list view ----------
 function rowHTML(n){
-  if(n.ref){ const t=findByIdPrimary(n.id); return `<li><div class="row"><span class="num"></span><span><span class="who" style="font-weight:400">${esc(n.name)}</span></span><span class="refnote">Stepchild · listed in full at ${esc(t?t.num:'')}</span></div></li>`; }
+  if(n.ref){ const t=findByIdPrimary(n.id, n.view); return `<li><div class="row"><span class="num"></span><span><span class="who" style="font-weight:400">${esc(n.name)}</span></span><span class="refnote">Stepchild · listed in full at ${esc(t?t.num:'')}</span></div></li>`; }
   const sp=(n.sp||[]);
   const place=shortPlace(n.bp);
-  return `<li><div class="row"><span class="num">${esc(n.step?numLabel(n):n.num)}</span><span><button class="who${n.lead?' lead-name':''}" data-goto-key="${esc(n.key)}">${esc(n.name)}</button> <span class="life">${esc([life(n),place].filter(Boolean).join(' · '))}</span></span>
+  return `<li><div class="row"><span class="num">${esc(n.step?numLabel(n):numbered(n)?n.num:'')}</span><span><button class="who${n.lead?' lead-name':''}" data-goto-key="${esc(n.key)}">${esc(n.name)}</button> <span class="life">${esc([life(n),place].filter(Boolean).join(' · '))}</span>${!numbered(n)&&n.depth>1?`<span class="genchip">${esc(genSingular(n.depth))}</span>`:''}</span>
     ${sp.length?`<div class="sps">${sp.map((s,i)=>`<span class="m">⚭${sp.length>1?s.fi:''}</span> <span class="${s.also&&s.also.length?'sp-bridge':''}">${esc(s.name)}${life(s)?` <span class="life">${esc(life(s))}</span>`:''}</span>`).join('&nbsp;&nbsp; ')}</div>`:''}
     ${n.fate?`<div class="fate">${esc(n.fate)}</div>`:''}${n.note?`<div class="note">${esc(n.note)}</div>`:''}${n.kidsAt?`<div class="note">${esc(kidsAtText(n))}</div>`:''}
     </div>${(n.kids||[]).length?`<ul>${n.kids.map(rowHTML).join('')}</ul>`:''}</li>`;
 }
 function renderLists(){
-  const roots=RAW.filter(r=> lineFilter==='all' || r.line===lineFilter);
+  if(currentView!=='wider'){
+    const r=VIEWS[currentView][0];
+    document.getElementById('lists').innerHTML=`<section class="list"><h2 class="${r.line}">${esc(VIEW_META[currentView].title)}</h2>
+      <p class="root-sub">Each step to the right is one generation.</p>
+      <div class="lv gen"><ul>${rowHTML(r)}</ul></div></section>`;
+    return;
+  }
+  const roots=VIEWS.wider;
   document.getElementById('lists').innerHTML = roots.map(r=>`
     <section class="list"><h2 class="${r.line}">${LINE_NAME[r.line]}</h2>
     <p class="root-sub">${(s=>s.endsWith('?')?s:s+'.')('Descendants of '+esc(r.name)+((r.sp||[]).length?' and '+r.sp.map(s=>esc(s.name)).join(' and '):''))} Numbers follow the d'Aboville system: each digit is a child's birth order within the family.</p>
@@ -556,9 +617,12 @@ q.addEventListener('input',()=>{
   const v=norm(q.value.trim());
   if(v.length<2){ res.hidden=true; q.setAttribute('aria-expanded','false'); return; }
   const terms=v.split(/\s+/);
-  hits=people.filter(p=>terms.every(t=>norm(p.name).includes(t))).slice(0,10);
+  const seenKey=new Set();
+  hits=people.filter(p=>terms.every(t=>norm(p.name).includes(t)))
+    .sort((a,b)=>(a.view===currentView?0:1)-(b.view===currentView?0:1) || ['sarah','pinchas','asher','wider'].indexOf(a.view)-['sarah','pinchas','asher','wider'].indexOf(b.view))
+    .filter(p=>{ const k=p.name+'|'+(p.via||''); if(seenKey.has(k)) return false; seenKey.add(k); return true; }).slice(0,10);
   active=-1;
-  res.innerHTML = hits.length ? hits.map((h,i)=>`<li role="option"><button data-i="${i}"><span class="r-name">${esc(h.name)}</span><span class="r-meta">${h.desc?esc(h.num):'spouse of '+esc(h.via)}${h.life?' · '+esc(h.life):''}</span></button></li>`).join('')
+  res.innerHTML = hits.length ? hits.map((h,i)=>`<li role="option"><button data-i="${i}"><span class="r-name">${esc(h.name)}</span><span class="r-meta">${esc(VIEW_META[h.view].label)} · ${h.desc?(h.view==='wider'?esc(h.num):esc(genSingular(h.depth)||'')):'spouse of '+esc(h.via)}${h.life?' · '+esc(h.life):''}</span></button></li>`).join('')
     : `<li><span class="r-meta" style="padding:6px 8px;display:block">No one by that name. Try another spelling.</span></li>`;
   res.hidden=false; q.setAttribute('aria-expanded','true');
 });
@@ -574,14 +638,12 @@ function pick(i){ const h=hits[i]; if(!h) return; res.hidden=true; q.setAttribut
 document.addEventListener('click',e=>{ if(!e.target.closest('.search')) res.hidden=true; });
 
 // ---------- boot ----------
-render(); renderLists();
-let v='tree'; try{ v=localStorage.getItem('pv-view')||'tree'; }catch(e){}
+let v='tree', tab='sarah';
+try{ v=localStorage.getItem('pv-view')||'tree'; tab=localStorage.getItem('pv-tab')||'sarah'; }catch(e){}
+if(!VIEWS[tab]) tab='sarah';
 showView(v);
-requestAnimationFrame(()=>{
-  const k=0.82, box=document.getElementById('stage').getBoundingClientRect();
-  const d=lastRoot.descendants().find(d=>d.data.lead) || lastRoot.descendants().find(d=>d.depth===1);
-  if(d) svg.call(zoom.transform, d3.zoomIdentity.translate(Math.min(box.width*0.3, 240) - (d.depth-1)*COLW*k, box.height*0.5 - d.x*k).scale(k));
-});
+setView(tab, true);
+requestAnimationFrame(home);
 })();
 </script>
 </body>
