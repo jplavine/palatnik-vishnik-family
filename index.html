@@ -38,7 +38,7 @@ button{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 
 /* header */
-header{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:20px 40px;align-items:end}
+header{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px 36px;align-items:center}
 .eyebrow{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;margin:0 0 6px}
 h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,5vw,54px);line-height:1.02;margin:0;text-wrap:balance;letter-spacing:-.01em}
 h1 .amp{font-style:italic;font-weight:400;color:var(--muted)}
@@ -49,6 +49,9 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .bridge{border:1px solid var(--rule);background:var(--surface);border-radius:4px;padding:14px 16px;font-size:13.5px}
 .bridge h2{font-family:var(--serif);font-size:17px;font-weight:600;margin:0 0 4px;color:var(--bridge)}
 .bridge p{margin:0 0 8px;color:var(--ink)}
+.bridge-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 28px}
+.bridge-grid p{margin:0 0 6px}
+@media (max-width:900px){.bridge-grid{grid-template-columns:1fr}}
 .sitenav{display:flex;gap:18px;font-size:13.5px;font-weight:500}
 .sitenav a{text-decoration:none;color:var(--muted);padding-bottom:2px;border-bottom:2px solid transparent}
 .sitenav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--ink)}
@@ -199,32 +202,35 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 /* cover */
 .cover{margin:0;display:flex;flex-direction:column;gap:8px}
 .cover img{display:block;width:100%;height:auto;aspect-ratio:2000/1415;object-fit:cover;border-radius:2px;border:1px solid var(--rule);background:var(--sunk);filter:sepia(.12) contrast(1.02)}
-.cover figcaption{font-size:12.5px;color:var(--muted);letter-spacing:.02em}
+.cover figcaption{font-size:12px;line-height:1.45;color:var(--muted)}
+.cover a{display:block;cursor:zoom-in}
 footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <figure class="cover">
-    <img src="images/cover.jpg" alt="Studio portrait of a family of eight. Seated are Pinchas Palatnik, bearded and in a cap, and Sarah Sokolov in a headscarf. Standing are Max (Motel) and Herman Palatnik as teenage boys with two young women, and in front a girl and a toddler on a tricycle." width="1600" height="1132">
-    <figcaption>Family portrait, early twentieth century. Seated, Pinchas Palatnik and Sarah Sokolov; standing from the right, Max (Motel) Palatnik, unknown, Herman Palatnik, unknown. Two young children, unknown.</figcaption>
-  </figure>
   <nav class="sitenav" aria-label="Site"><a href="./" aria-current="page">Family tree</a><a href="towns.html">Teplyk &amp; Zhabokrych</a></nav>
   <header>
-    <div>
+    <figure class="cover">
+      <a href="images/cover.jpg" title="Open the photo full size"><img src="images/cover.jpg" alt="Studio portrait of a family of eight. Seated are Pinchas Palatnik, bearded and in a cap, and Sarah Sokolov in a headscarf. Standing are Max (Motel) and Herman Palatnik as teenage boys with two young women, and in front a girl and a toddler on a tricycle." width="1600" height="1132"></a>
+      <figcaption>Family portrait, early twentieth century. Seated, Pinchas Palatnik and Sarah Sokolov; standing from the right, Max (Motel) Palatnik, unknown, Herman Palatnik, unknown. Two young children, unknown.</figcaption>
+    </figure>
+    <div class="intro">
       <p class="eyebrow">The family of Sarah (Sura) Sokolov of Teplik, Ukraine</p>
       <h1><span class="p">Palatnik</span> <span class="amp">&amp;</span> <span class="v">Vishnik</span></h1>
       <p class="lede">The tree opens on <button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button> (c. 1872–1951), the ancestor of most of the family at the reunion. Use the tabs to see the descendants of her two husbands, Pinchas Palat and Asher Zelig Veshnack, or the wider family.</p>
       <ul class="facts" id="facts"></ul>
     </div>
-    <aside class="bridge" aria-label="How the two families connect">
-      <h2>Where the families meet</h2>
+  </header>
+  <aside class="bridge" aria-label="How the families connect">
+    <h2>Where the families meet</h2>
+    <div class="bridge-grid">
       <p><button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button>, daughter of Samuel Sokolow and Annie Becker?, married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pincus (Philip) Palat</button>. Her six children with Asher, <button class="linkbtn v" data-goto="hymen">Hymen</button>, <button class="linkbtn v" data-goto="yankl">Yankl</button>, <button class="linkbtn v" data-goto="rifke">Rifke</button>, <button class="linkbtn v" data-goto="shmiel">Shmiel</button>, <button class="linkbtn v" data-goto="hana">Hana Hynice</button> and <button class="linkbtn v" data-goto="schaya">Schaya</button>, were half-siblings of her sons with Pincus, <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
       <p>Her son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pincus's daughter from a prior marriage, <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>, joining the two families again.</p>
       <p>Two of her children married a sister and brother: <button class="linkbtn v" data-goto="hymen">Hymen</button> married <strong>Pearl Goodman</strong>, and <button class="linkbtn v" data-goto="rifke">Rifke</button> married Pearl's brother <strong>Sanya Gutman</strong>. The family used both spellings, Gutman and Goodman.</p>
+    </div>
       <p class="spell">Names are spelled as recorded: Sokolov, Sokolow, Sokoloff · Palatnik, Palat, Palatt, Pallot, Polatin · Vishnik, Vishnak, Veshnack, Veshnock, Westock.</p>
-    </aside>
-  </header>
+  </aside>
 
   <div class="toolbar" role="toolbar" aria-label="Tree controls">
     <div class="seg" role="group" aria-label="View">
