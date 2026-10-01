@@ -20,6 +20,7 @@ def parse(path):
         if lvl == 1:
             ev = tag
             if kind == 'I':
+                if tag == 'DEAT': cur['deat']['_y'] = True   # a death entry, even without a date, means deceased
                 if tag == 'NAME' and not cur['name']: cur['name'] = val
                 elif tag == 'SEX': cur['sex'] = val
                 elif tag == 'FAMC': cur['famc'].append(val.strip('@'))

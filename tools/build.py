@@ -109,6 +109,7 @@ def info(p):
     x = I[p]; g = lambda d, k: '' if bad(d.get(k, '')) else d.get(k, '')
     out = {'id': p, 'name': x.get('literal') or clean(x['name']) or 'Unknown', 'sex': x['sex'], 'b': g(x['birt'], 'date'), 'bp': g(x['birt'], 'plac'),
            'd': g(x['deat'], 'date'), 'dp': g(x['deat'], 'plac')}
+    if x['deat'].get('_y') and not out['d'] and not out['dp']: out['deceased'] = True
     out.update(x.get('extra', {}))
     return out
 def yr(s):
@@ -133,7 +134,7 @@ def make_walker(home_map):
         for i, fm in enumerate(fams):
             sp = fm['wife'] if fm['husb'] == p else fm['husb']
             if sp and sp in I:
-                s = info(sp); s['marr'] = fm['marr'].get('date', ''); s['fi'] = i + 1; node['sp'].append(s); spouse_of[sp].add(p)
+                s = info(sp); s['marr'] = fm['marr'].get('date', ''); s['mp'] = fm['marr'].get('plac', ''); s['fi'] = i + 1; node['sp'].append(s); spouse_of[sp].add(p)
             home = home_map.get(fm['id'])
             if home and home != p:
                 node['kidsAt'] = home
@@ -210,7 +211,7 @@ for t in ALL: decide(t, byear(t) or 1790)
 LIVING_NAMES = set()
 def scrub(p):
     LIVING_NAMES.add(p['name'])
-    for k in ('b', 'bp', 'd', 'dp', 'marr', 'note'): p[k] = ''
+    for k in ('b', 'bp', 'd', 'dp', 'marr', 'mp', 'note'): p[k] = ''
     p['name'] = 'Living relative'
     p['living'] = True
 for t in ALL:
@@ -218,7 +219,7 @@ for t in ALL:
         if n['id'] in LIVING: scrub(n)
         for s in n.get('sp', []):
             if s['id'] in LIVING: scrub(s)
-            elif n.get('living'): s['marr'] = ''
+            elif n.get('living'): s['marr'] = ''; s['mp'] = ''
 for t in ALL:
     for n in nodes(t):
         for s in n.get('sp', []):

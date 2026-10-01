@@ -168,6 +168,11 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .row button.who{background:none;border:0;padding:0;cursor:pointer;text-align:left}
 .row button.who:hover{text-decoration:underline}
 .row .who.lead-name{color:var(--vis);font-size:19px;font-weight:700}
+.sprow{font-size:13.5px;padding:1px 0 3px;line-height:1.45}
+.lv:not(.gen) .sprow{padding-left:calc(3.5em + 10px)}
+.sprow .plus{color:var(--muted);font-weight:700;margin-right:6px}
+.sprow .spfacts{color:var(--muted);font-size:12.5px}
+.sprow .sp-bridge,.sprow .sp-cross{font-size:15px}
 .lists{display:flex;flex-direction:column;gap:16px}
 .note{font-size:12.5px;color:var(--muted);margin:0}
 
@@ -586,14 +591,45 @@ document.getElementById('v-tree').onclick=()=>showView('tree');
 document.getElementById('v-list').onclick=()=>showView('list');
 
 // ---------- list view ----------
+function ageText(b,d){
+  const yb=yearOf(b), yd=yearOf(d); if(!yb||!yd) return '';
+  const full=x=>/^\s*\d{1,2}\s+[A-Za-z]{3,}\.?\s+\d{4}\s*$/.test(x||'');
+  let a=yd-yb;
+  if(full(b)&&full(d)){ const db=new Date(b), dd=new Date(d); if(!isNaN(db)&&!isNaN(dd)) a=Math.floor((dd-db)/31557600000); }
+  return a>=0&&a<120 ? String(a) : '';
+}
+function spouseFacts(s){
+  if(s.living) return '';
+  const parts=[];
+  const when=(d,pl)=> d&&pl ? d+' in '+pl : (d||pl);
+  if(s.b||s.bp) parts.push('b: '+when(s.b,s.bp));
+  if(s.marr||s.mp) parts.push('m: '+when(s.marr,s.mp));
+  if(s.d||s.dp) parts.push('d: '+when(s.d,s.dp));
+  else if(s.deceased) parts.push('d: Deceased');
+  if(!parts.length) return '';
+  const age=ageText(s.b,s.d);
+  return parts.join('. ')+(age?'; age: '+age:'')+'.';
+}
+function spouseRow(s){
+  const cls=s? (s.also&&s.also.length?'sp-bridge':s.cross?'sp-cross':'') : '';
+  const facts=s?spouseFacts(s):'';
+  return `<div class="sprow"><span class="plus">+</span><span class="${cls}">${esc(s?s.name:'Unknown')}</span>${facts?` <span class="spfacts">${esc(facts)}</span>`:''}</div>`;
+}
 function rowHTML(n){
   if(n.ref){ const t=findByIdPrimary(n.id, n.view); return `<li><div class="row"><span class="num"></span><span><span class="who" style="font-weight:400">${esc(n.name)}</span></span><span class="refnote">Stepchild · listed in full at ${esc(t?t.num:'')}</span></div></li>`; }
-  const sp=(n.sp||[]);
+  const sp=(n.sp||[]), kids=(n.kids||[]);
   const place=shortPlace(n.bp);
+  // one group per marriage, in marriage order: "+ spouse", then that marriage's children
+  const fis=[...new Set([...sp.map(s=>s.fi), ...kids.map(k=>k.fi)])].filter(x=>x!=null).sort((a,b)=>a-b);
+  const groups=fis.map(fi=>{
+    const s=sp.find(x=>x.fi===fi), ks=kids.filter(k=>k.fi===fi);
+    if(!s && !ks.length) return '';
+    return spouseRow(s)+(ks.length?`<ul>${ks.map(rowHTML).join('')}</ul>`:'');
+  }).join('');
+  const loose=kids.filter(k=>k.fi==null);
   return `<li><div class="row"><span class="num">${esc(n.step?numLabel(n):numbered(n)?n.num:'')}</span><span><button class="who${n.lead?' lead-name':''}" data-goto-key="${esc(n.key)}">${esc(n.name)}</button> <span class="life">${esc([life(n),place].filter(Boolean).join(' · '))}</span>${!numbered(n)&&n.depth>1?`<span class="genchip">${esc(genSingular(n.depth))}</span>`:''}</span>
-    ${sp.length?`<div class="sps">${sp.map((s,i)=>`<span class="m">⚭${sp.length>1?s.fi:''}</span> <span class="${s.also&&s.also.length?'sp-bridge':s.cross?'sp-cross':''}">${esc(s.name)}${life(s)?` <span class="life">${esc(life(s))}</span>`:''}</span>`).join('&nbsp;&nbsp; ')}</div>`:''}
     ${n.fate?`<div class="fate">${esc(n.fate)}</div>`:''}${n.note?`<div class="note">${esc(n.note)}</div>`:''}${n.kidsAt?`<div class="note">${esc(kidsAtText(n))}</div>`:''}
-    </div>${(n.kids||[]).length?`<ul>${n.kids.map(rowHTML).join('')}</ul>`:''}</li>`;
+    </div>${groups}${loose.length?`<ul>${loose.map(rowHTML).join('')}</ul>`:''}</li>`;
 }
 function renderLists(){
   if(currentView!=='wider'){
