@@ -363,7 +363,7 @@ byKey.forEach(n=>{
 
 // ---------- facts ----------
 (function(){
-  const count=view=>{ let d=0,g=0; byKey.forEach(n=>{ if(n.view!==view||n.ref||n.step) return; d++; g=Math.max(g,n.depth); }); return [d,g]; };
+  const count=view=>{ const ids=new Set(); let g=0; byKey.forEach(n=>{ if(n.view!==view||n.ref||n.step) return; ids.add(n.id); g=Math.max(g,n.depth); }); return [ids.size,g]; };
   const [sd,sg]=count('sarah'), [wd]=count('wider');
   document.getElementById('facts').innerHTML =
     `<li><b>${sd-1}</b>descendants of Sarah</li><li><b>${sg}</b>generations</li><li><b>${wd}</b>people in the wider family</li>`;

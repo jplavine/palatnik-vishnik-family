@@ -99,8 +99,6 @@ SARAH, PINCUS, ASHER, HYMEN = 'I262525311332', 'I262525311317', 'I262525318130',
 f = find_fam(PINCUS, SARAH)
 if f and HYMEN in F[f]['chil']:
     F[f]['chil'].remove(HYMEN); I[HYMEN]['famc'] = [x for x in I[HYMEN]['famc'] if x != f]
-WIDER_HOME = {f: SARAH for f in I[SARAH]['fams']}
-WIDER_HOME.update(FAM_HOME)
 WIDER = [('S', 'I262525318119'), ('P', 'I262539792216'), ('V', 'I262798668669')]
 
 def clean(n): return re.sub(r'\s+', ' ', n.replace('/', ' ')).strip()
@@ -117,12 +115,8 @@ def yr(s):
 
 spouse_of = collections.defaultdict(set)
 def make_walker(home_map):
-    seen = {}
     def walk(p, line):
         node = info(p); node['line'] = line
-        if p in seen:
-            node['ref'] = seen[p]; return node
-        seen[p] = line
         shared = collections.Counter(c for f in I[p]['fams'] if f in F for c in F[f]['chil'])
         def fam_order(fm):   # order marriages by their earliest child found only in that marriage
             first = 'first' in (I.get(fm['wife'] or '', {}).get('name', '') + I.get(fm['husb'] or '', {}).get('name', ''))
@@ -155,7 +149,7 @@ views = {
     'pinchas': [make_walker({})(PINCUS, 'P')],
     'asher':   [make_walker({})(ASHER, 'V')],
 }
-w = make_walker(WIDER_HOME)
+w = make_walker({})   # children appear in full under every parent, even when that repeats them
 views['wider'] = [w(r, l) for l, r in WIDER]
 ALL = [t for ts in views.values() for t in ts]
 def nodes(n):
@@ -179,8 +173,8 @@ for t in ALL:
             if s['id'] in blood: s['cross'] = True
 
 for name, ts in views.items():
-    c = collections.Counter((n['name'], n['b']) for t in ts for n in nodes(t) if not n.get('ref'))
-    print(f"{name:8s} descendants {sum(c.values()):4d}   possible dups: {[k for k, v in c.items() if v > 1]}")
+    ids = {n['id'] for t in ts for n in nodes(t)}
+    print(f"{name:8s} people {len(ids):4d}")
 
 out = {'views': views, 'sarah_parents': [info(x) for x in (F[I[SARAH]['famc'][0]]['husb'], F[I[SARAH]['famc'][0]]['wife']) if x],
        'sarah_siblings': [info(c) for c in F[I[SARAH]['famc'][0]]['chil'] if c != SARAH]}
