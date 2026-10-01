@@ -219,7 +219,7 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
     </div>
     <aside class="bridge" aria-label="How the two families connect">
       <h2>Where the families meet</h2>
-      <p><button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button>, daughter of Samuel Sokolow and Annie Becker?, married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pincus (Philip) Palat</button>. Her son <button class="linkbtn v" data-goto="hymen">Hymen Veshnock</button> was half-brother to <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
+      <p><button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button>, daughter of Samuel Sokolow and Annie Becker?, married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pincus (Philip) Palat</button>. Her six children with Asher, <button class="linkbtn v" data-goto="hymen">Hymen</button>, <button class="linkbtn v" data-goto="yankl">Yankl</button>, <button class="linkbtn v" data-goto="rifke">Rifke</button>, <button class="linkbtn v" data-goto="shmiel">Shmiel</button>, <button class="linkbtn v" data-goto="hana">Hana Hynice</button> and <button class="linkbtn v" data-goto="schaya">Schaya</button>, were half-siblings of her sons with Pincus, <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
       <p>Her son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pincus's daughter <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>, joining the two families again.</p>
       <p>Two of her children married a sister and brother: <button class="linkbtn v" data-goto="hymen">Hymen</button> married <strong>Pearl Goodman</strong>, and <button class="linkbtn v" data-goto="rifke">Rifke</button> married Pearl's brother <strong>Sanya Gutman</strong>. The family used both spellings, Gutman and Goodman.</p>
       <p class="spell">Names are spelled as recorded: Sokolov, Sokolow, Sokoloff · Palatnik, Palat, Palatt, Pallot, Polatin · Vishnik, Vishnak, Veshnack, Veshnock, Westock.</p>
@@ -545,6 +545,9 @@ const bridgeTargets={
   'yankl':()=>keyWhere(n=>n.name.startsWith('Yankl Vishnak')),
   'chaya':()=>keyWhere(n=>n.name==='Chaya Palatnik'),
   'rifke':()=>keyWhere(n=>n.name.startsWith('Rifke')),
+  'shmiel':()=>keyWhere(n=>n.name.startsWith('Shmiel')),
+  'hana':()=>keyWhere(n=>n.name.startsWith('Hana Hynice')),
+  'schaya':()=>keyWhere(n=>n.name.startsWith('Schaya')),
 };
 function keyWhere(f){
   for(const v of [currentView,'sarah','pinchas','asher','wider']) for(const n of byKey.values()) if(n.view===v && !n.ref && f(n)) return n.key;
