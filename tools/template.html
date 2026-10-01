@@ -172,6 +172,7 @@ h1 .p{color:var(--pal)} h1 .v{color:var(--vis)}
 .lv:not(.gen) .sprow{padding-left:calc(3.5em + 10px)}
 .sprow .plus{color:var(--muted);font-weight:700;margin-right:6px}
 .sprow .spfacts{color:var(--muted);font-size:12.5px}
+.sprow .spsib{color:var(--bridge);font-size:12.5px;font-style:italic;font-weight:600}
 .sprow .sp-bridge,.sprow .sp-cross{font-size:15px}
 .lists{display:flex;flex-direction:column;gap:16px}
 .note{font-size:12.5px;color:var(--muted);margin:0}
@@ -215,6 +216,7 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
       <h2>Where the families meet</h2>
       <p><button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button>, daughter of Samuel Sokolow and Annie Becker?, married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pincus (Philip) Palat</button>. Her son <button class="linkbtn v" data-goto="hymen">Hymen Veshnock</button> was half-brother to <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
       <p>Her son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pincus's daughter <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>, joining the two families again.</p>
+      <p>Two of her children married a sister and brother: <button class="linkbtn v" data-goto="hymen">Hymen</button> married <strong>Pearl Goodman</strong>, and <button class="linkbtn v" data-goto="rifke">Rifke</button> married Pearl's brother <strong>Sanya Gutman</strong>. The family used both spellings, Gutman and Goodman.</p>
       <p class="spell">Names are spelled as recorded: Sokolov, Sokolow, Sokoloff · Palatnik, Palat, Palatt, Pallot, Polatin · Vishnik, Vishnak, Veshnack, Veshnock, Westock.</p>
     </aside>
   </header>
@@ -349,7 +351,7 @@ function cardHeight(n){
   const lt=[life(n),shortPlace(n.bp)].filter(Boolean).join(' · ');
   if(lt) h+=lines(lt.length,6.5)*17;
   [n.fate,n.note,n.kidsAt?'Children listed with Xxxxxxxxxxxxxx Xxxxxxxx (1.1.4.1)':''].filter(Boolean).forEach(x=>{ h+=lines(x.length,6.6)*17; });
-  (n.sp||[]).forEach(s=>{ h+= ((s.also&&s.also.length)||s.cross) ? 6+lines((s.name+' '+life(s)).length+3,7.9)*18 : 6+lines((s.name+' '+life(s)).length+3,6.6)*17; });
+  (n.sp||[]).forEach(s=>{ if(s.sib) h+=17; h+= ((s.also&&s.also.length)||s.cross) ? 6+lines((s.name+' '+life(s)).length+3,7.9)*18 : 6+lines((s.name+' '+life(s)).length+3,6.6)*17; });
   return h+2;
 }
 Object.entries(VIEWS).forEach(([view,roots])=>roots.forEach(t=>prep(t, view, t.line, view==='wider'?LINE_NUM[t.line]:'1', 1, null)));
@@ -437,7 +439,7 @@ function nodeHTML(n){
     const sp=(n.sp||[]);
     const shown=sp;
     const multi=sp.length>1;
-    const spHTML=shown.map((s,i)=>`<div class="c-sp${s.also&&s.also.length?' sp-bridge':s.cross?' sp-cross':''}"><span class="m">⚭${multi?s.fi:''}</span>${esc(s.name)}${life(s)?` <span class="yrs">${esc(life(s))}</span>`:''}</div>`).join('')
+    const spHTML=shown.map((s,i)=>`<div class="c-sp${s.also&&s.also.length?' sp-bridge':s.cross?' sp-cross':''}"><span class="m">⚭${multi?s.fi:''}</span>${esc(s.name)}${life(s)?` <span class="yrs">${esc(life(s))}</span>`:''}${s.sib?`<div class="c-note">${esc(s.sib)}</div>`:''}</div>`).join('')
 
     const place=shortPlace(n.bp);
     const lifeTxt=[life(n),place].filter(Boolean).join(' · ');
@@ -514,7 +516,7 @@ function showPanel(n){
         ${n.d||n.dp?`<dt>Died</dt><dd>${where(n.d,n.dp)}</dd>`:''}
         ${n.parent?`<dt>Parents</dt><dd>${personLink(n.parent)}${n.otherParent?` <span class="sub">and</span> ${esc(n.otherParent.name)}`:''}</dd>`:''}
       </dl>
-      ${sp.length?`<section><h4>Married</h4><ul>${sp.map(s=>`<li>${esc(s.name)}${life(s)?` <span class="sub">${esc(life(s))}</span>`:''}${s.marr?`<br><span class="sub">m. ${esc(s.marr)}</span>`:''}${s.also&&s.also.length?`<br><span class="sub">Also married ${s.also.map(esc).join(', ')}</span>`:''}</li>`).join('')}</ul></section>`:''}
+      ${sp.length?`<section><h4>Married</h4><ul>${sp.map(s=>`<li>${esc(s.name)}${life(s)?` <span class="sub">${esc(life(s))}</span>`:''}${s.marr?`<br><span class="sub">m. ${esc(s.marr)}</span>`:''}${s.also&&s.also.length?`<br><span class="sub">Also married ${s.also.map(esc).join(', ')}</span>`:''}${s.sib?`<br><span class="sub">${esc(s.sib)}</span>`:''}</li>`).join('')}</ul></section>`:''}
       ${kids.length?`<section><h4>Children (${kids.length})</h4><ol>${kids.map(k=>`<li>${personLink(k)} <span class="sub">${esc(life(k))}</span></li>`).join('')}</ol></section>`:''}
       ${refs.length?`<section><h4>Stepchildren</h4><ul>${refs.map(r=>{const t=r.step?r:findByIdPrimary(r.id, r.view);return `<li>${t?personLink(t):esc(r.name)}</li>`}).join('')}</ul></section>`:''}
       ${home?`<section><h4>Children</h4><p class="pnote" style="font-style:normal">Listed with ${personLink(home)} (${esc(home.num)})</p></section>`:''}
@@ -537,6 +539,7 @@ const bridgeTargets={
   'max':()=>keyWhere(n=>n.name.startsWith('Max Motel')),
   'yankl':()=>keyWhere(n=>n.name.startsWith('Yankl Vishnak')),
   'chaya':()=>keyWhere(n=>n.name==='Chaya Palatnik'),
+  'rifke':()=>keyWhere(n=>n.name.startsWith('Rifke')),
 };
 function keyWhere(f){
   for(const v of [currentView,'sarah','pinchas','asher','wider']) for(const n of byKey.values()) if(n.view===v && !n.ref && f(n)) return n.key;
@@ -613,7 +616,7 @@ function spouseFacts(s){
 function spouseRow(s){
   const cls=s? (s.also&&s.also.length?'sp-bridge':s.cross?'sp-cross':'') : '';
   const facts=s?spouseFacts(s):'';
-  return `<div class="sprow"><span class="plus">+</span><span class="${cls}">${esc(s?s.name:'Unknown')}</span>${facts?` <span class="spfacts">${esc(facts)}</span>`:''}</div>`;
+  return `<div class="sprow"><span class="plus">+</span><span class="${cls}">${esc(s?s.name:'Unknown')}</span>${facts?` <span class="spfacts">${esc(facts)}</span>`:''}${s&&s.sib?` <span class="spsib">${esc(s.sib)}.</span>`:''}</div>`;
 }
 function rowHTML(n){
   if(n.ref){ const t=findByIdPrimary(n.id, n.view); return `<li><div class="row"><span class="num"></span><span><span class="who" style="font-weight:400">${esc(n.name)}</span></span><span class="refnote">Stepchild · listed in full at ${esc(t?t.num:'')}</span></div></li>`; }

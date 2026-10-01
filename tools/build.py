@@ -172,6 +172,19 @@ for t in ALL:
         for s in n.get('sp', []):
             if s['id'] in blood: s['cross'] = True
 
+# in-law links: spouses who are siblings of other spouses (Pearl Goodman and Sanya Gutman)
+spouse_ids = {s['id'] for t in ALL for n in nodes(t) for s in n.get('sp', [])}
+def siblings(p):
+    return {c for f in I[p]['famc'] if f in F for c in F[f]['chil'] if c != p}
+for t in ALL:
+    for n in nodes(t):
+        for s in n.get('sp', []):
+            sibs = [x for x in siblings(s['id']) if x in spouse_ids]
+            if sibs:
+                rel = {'F': 'Sister', 'M': 'Brother'}.get(I[s['id']]['sex'], 'Sibling')
+                s['sib'] = rel + ' of ' + ', '.join(I[x].get('literal') or clean(I[x]['name']) for x in sibs)
+                s['sibNames'] = [I[x].get('literal') or clean(I[x]['name']) for x in sibs]
+
 for name, ts in views.items():
     ids = {n['id'] for t in ts for n in nodes(t)}
     print(f"{name:8s} people {len(ids):4d}")
@@ -218,6 +231,8 @@ for t in ALL:
     for n in nodes(t):
         for s in n.get('sp', []):
             if s.get('also'): s['also'] = ['Living relative' if a in LIVING_NAMES else a for a in s['also']]
+            if s.get('sib') and (s.get('living') or any(x in LIVING_NAMES for x in s.get('sibNames', []))): s.pop('sib')
+            s.pop('sibNames', None)
 for x in out['sarah_siblings']:
     if x['id'] in LIVING: scrub(x)
 print('hidden details for', len(LIVING), 'possibly living people')
