@@ -76,6 +76,11 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
 .vic .yv{font-size:12.5px}
 .blessing{font-family:var(--serif);font-style:italic;font-size:19px;margin:16px 0 0;max-width:66ch;line-height:1.5}
 .blessing [lang=he]{font-style:normal;font-size:22px;display:inline-block;margin-top:2px}
+.testimony .who{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.testimony .who span{font-size:12px;border:1px solid var(--rule);border-radius:3px;padding:1px 8px;color:var(--muted)}
+.testimony .vid{position:relative;aspect-ratio:16/9;max-width:760px;border:1px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--sunk);margin:14px 0 8px}
+.testimony .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.testimony p{margin:0 0 12px;max-width:70ch}
 .hero{border-left:3px solid var(--vis);padding:2px 0 2px 16px;max-width:70ch}
 .hero p{margin:0 0 10px}
 .hero .quote{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--ink)}
@@ -100,6 +105,19 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
 
 __SECTIONS__
 
+  <section class="vic testimony" aria-labelledby="testimony">
+    <h2 id="testimony">A survivor's account</h2>
+    <p class="sub">Sof'ia Moiseevna Palatnikova (1927&ndash;2021) of Teplyk was interviewed by the Archive of Historical Eastern Yiddish Memories (AHEYM) at Indiana University.</p>
+    <div class="who" aria-label="Family connection">
+      <span>Palatnik line</span><span>Daughter of Moshe Palatnik</span><span>Granddaughter of Pincus (Philip) Palat</span><span>Sister of Tatiana Marinina (1921&ndash;2010)</span>
+    </div>
+    <p>Sof'ia was born in Teplyk on 28 December 1927. Her father was a butcher. In the 1930s the family lived on the Lunacharskii Jewish collective farm in Crimea, and she went to school for six years before the war interrupted her education. She survived the war in Teplyk and Bershad and in the camps at Bratslav, Haysyn and Raygorod. After the war she worked in an industrial complex for twenty-two years.</p>
+    <p>In this clip she describes how her family tried to flee Teplyk before the Germans took the town on 26 July 1941, but waited too long: "as soon as they attacked, they were already here." The Germans caught up with them and made them return. She goes on to describe the ghetto, where Jews cleared snow from the roads and wore armbands with the Star of David.</p>
+    <div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/CI3fIq-Ltk8?rel=0" title="Palatnikova: &quot;as soon as they attacked, they were already here&quot; (AHEYM)" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+    <p class="src">Video: <a href="https://www.youtube.com/watch?v=CI3fIq-Ltk8">watch on YouTube</a> &middot; Interview page: <a href="https://aheym.com/interview/?id=1321">AHEYM, interview 1321</a>. Courtesy of AHEYM, Indiana University.</p>
+    <p>Sof'ia and her sister Tatiana also filled out the Yad Vashem Pages of Testimony for people who died in Teplyk in May 1942, including the records for Lev, Yefim and Feyga listed above. On the form they described the people as fellow townspeople.</p>
+  </section>
+
   <section class="vic" aria-labelledby="more">
     <h2 id="more">More names to research</h2>
     <p class="sub">Yad Vashem's Shoah Names Database has many more people named Palatnik and Vishnyak (in several spellings) who lived in Teplyk. We have not yet linked these to our tree, so they are not listed above. Each search returns the original Pages of Testimony, which are often the only surviving record of a person.</p>
@@ -110,7 +128,7 @@ __SECTIONS__
     <p class="src" style="margin-top:12px">If you recognize a name, or know the fate of someone listed here as "circumstances not recorded", please tell us so the record can be corrected.</p>
   </section>
 
-  <footer>Sources: the family tree, and the Yad Vashem Shoah Names Database (collections.yadvashem.org), consulted 2 October 2026. A Yad Vashem match is marked "unconfirmed" when it rests on a name, a father's name and a place only.</footer>
+  <footer>Sources: the family tree; the Yad Vashem Shoah Names Database (collections.yadvashem.org); and AHEYM, Indiana University (aheym.com). Consulted 2 October 2026. A Yad Vashem match is marked "unconfirmed" when it rests on a name, a father's name and a place only.</footer>
 </div>
 </body>
 </html>
