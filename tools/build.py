@@ -289,3 +289,40 @@ tt = open(os.path.join(HERE, 'towns_template.html'), encoding='utf-8').read()
 tt = tt.replace('__TEPLYK_COUNT__', str(tc)).replace('__TEPLYK_LIST__', tl).replace('__ZHAB_COUNT__', str(zc)).replace('__ZHAB_LIST__', zl)
 open(os.path.join(ROOT, 'towns.html'), 'w', encoding='utf-8').write(tt)
 print('wrote towns.html', tc, 'born in Teplyk,', zc, 'in Zhabokrych')
+
+# --- memorial page: relatives who died in the Shoah or during the occupation (privacy-safe data only) ---
+YV_LINKS = {'M_feyga_mendel': '11086657', 'I262584199560': '11086658', 'M_yefim_mendel': '11086659'}
+def vic_item(n, rel, yv=None):
+    nm = n['name'].rstrip('?').strip()
+    b, d = year_txt(n.get('b')), year_txt(n.get('d'))
+    span = (b + '–' + d) if b and d else ('d. ' + d if d else (b and 'b. ' + b) or '')
+    place = (n.get('dp') or '').split(',')[0].strip()
+    bits = '<span class="nm">%s</span>' % _html.escape(nm)
+    if yv: bits += '<span class="tag">Unconfirmed</span>'
+    if span: bits += '<span class="yrs">%s</span>' % _html.escape(span)
+    if place and not re.search(r'USA', n.get('dp') or ''): bits += '<span class="rel">Died in %s</span>' % _html.escape(place)
+    if rel: bits += '<span class="rel">%s</span>' % _html.escape(rel.replace('?', ''))
+    if n.get('fate') and not yv: bits += '<span class="fl">%s</span>' % _html.escape(n['fate'])
+    if yv: bits += '<span class="rel yv">Named in <a href="https://collections.yadvashem.org/en/names/%s">Yad Vashem record %s</a>. The match rests on name, father\'s name and place.</span>' % (yv, yv)
+    return '<li>' + bits + '</li>'
+def vic_year(n):
+    m = re.search(r'\d{4}', n.get('d') or ''); return int(m[0]) if m else None
+groups = {'A': [], 'B': [], 'C': []}
+for pid, (n, kind, rel) in people.items():
+    f = n.get('fate') or ''
+    if pid in YV_LINKS: groups['B'].append((n, rel, YV_LINKS[pid]))
+    elif re.search(r'nazi|shoah|murder', f, re.I): groups['A'].append((n, rel, None))
+    else:
+        y = vic_year(n)
+        if y and 1941 <= y <= 1945 and not re.search(r'USA', n.get('dp') or ''): groups['C'].append((n, rel, None))
+def sec(title, sub, rows, sid):
+    rows.sort(key=lambda r: (yr(r[0].get('b')) or 9999, r[0]['name']))
+    return ('<section class="vic" aria-labelledby="%s"><h2 id="%s">%s</h2><p class="sub">%s</p><ol>%s</ol></section>'
+            % (sid, sid, title, sub, ''.join(vic_item(*r) for r in rows)))
+parts = []
+if groups['A']: parts.append(sec('Killed by the Nazis', 'Recorded in our family tree as victims of the Nazis.', groups['A'], 'killed'))
+if groups['B']: parts.append(sec('Probably murdered in Teplyk', 'Yad Vashem holds Pages of Testimony for people with these names, whose father or mother is named as Mendel and Feyga. We think they belong to our family but have not been able to confirm it.', groups['B'], 'probable'))
+if groups['C']: parts.append(sec('Died 1941–1945, circumstances not recorded', 'These relatives died during the war years, but our sources do not say how. Some may have been murdered; others may have died in the army, in evacuation, or of illness.', groups['C'], 'wartime'))
+mt = open(os.path.join(HERE, 'memorial_template.html'), encoding='utf-8').read().replace('__SECTIONS__', '\n'.join(parts))
+open(os.path.join(ROOT, 'memorial.html'), 'w', encoding='utf-8').write(mt)
+print('wrote memorial.html', {k: len(v) for k, v in groups.items()})
