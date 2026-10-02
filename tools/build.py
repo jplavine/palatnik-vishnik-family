@@ -46,6 +46,8 @@ if os.path.exists(add_path):
             if fm['wife'] == old: fm['wife'] = new
             if f not in I[new]['fams']: I[new]['fams'].append(f)
         del I[old]
+    for pid in A.get('drop_person', []):   # duplicate records to leave out
+        DROP.add(pid)
     for pid, name in A.get('rename', {}).items(): I[pid]['literal'] = name
     for a, b2 in A.get('drop_family', []):
         f = find_fam(a, b2)
