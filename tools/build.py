@@ -298,7 +298,6 @@ def vic_item(n, rel, yv=None):
     span = (b + '–' + d) if b and d else ('d. ' + d if d else (b and 'b. ' + b) or '')
     place = (n.get('dp') or '').split(',')[0].strip()
     bits = '<span class="nm">%s</span>' % _html.escape(nm)
-    if yv: bits += '<span class="tag">Unconfirmed</span>'
     if span: bits += '<span class="yrs">%s</span>' % _html.escape(span)
     if place and not re.search(r'USA', n.get('dp') or ''): bits += '<span class="rel">Died in %s</span>' % _html.escape(place)
     if rel: bits += '<span class="rel">%s</span>' % _html.escape(rel.replace('?', ''))
