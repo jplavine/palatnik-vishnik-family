@@ -326,3 +326,9 @@ if groups['C']: parts.append(sec('Died 1941–1945, circumstances not recorded',
 mt = open(os.path.join(HERE, 'memorial_template.html'), encoding='utf-8').read().replace('__SECTIONS__', '\n'.join(parts))
 open(os.path.join(ROOT, 'memorial.html'), 'w', encoding='utf-8').write(mt)
 print('wrote memorial.html', {k: len(v) for k, v in groups.items()})
+
+# --- audio page: recordings of family members ---
+at = open(os.path.join(HERE, 'audio_template.html'), encoding='utf-8').read()
+at = at.replace('__VIDEOS__', '')
+open(os.path.join(ROOT, 'audio.html'), 'w', encoding='utf-8').write(at)
+print('wrote audio.html')
