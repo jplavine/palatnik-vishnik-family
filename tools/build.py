@@ -332,3 +332,8 @@ at = open(os.path.join(HERE, 'audio_template.html'), encoding='utf-8').read()
 at = at.replace('__VIDEOS__', '')
 open(os.path.join(ROOT, 'audio.html'), 'w', encoding='utf-8').write(at)
 print('wrote audio.html')
+
+# --- journey page ---
+jt = open(os.path.join(HERE, 'journey_template.html'), encoding='utf-8').read()
+open(os.path.join(ROOT, 'journey.html'), 'w', encoding='utf-8').write(jt)
+print('wrote journey.html')
