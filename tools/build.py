@@ -317,8 +317,8 @@ for pid, (n, kind, rel) in people.items():
         if y and 1941 <= y <= 1945 and not re.search(r'USA', n.get('dp') or ''): groups['C'].append((n, rel, None))
 def sec(title, sub, rows, sid):
     rows.sort(key=lambda r: (yr(r[0].get('b')) or 9999, r[0]['name']))
-    return ('<section class="vic" aria-labelledby="%s"><h2 id="%s">%s</h2><p class="sub">%s</p><ol>%s</ol></section>'
-            % (sid, sid, title, sub, ''.join(vic_item(*r) for r in rows)))
+    return ('<section class="vic %s" aria-labelledby="%s"><h2 id="%s">%s</h2><p class="sub">%s</p><ol>%s</ol></section>'
+            % (sid, sid, sid, title, sub, ''.join(vic_item(*r) for r in rows)))
 parts = []
 if groups['A']: parts.append(sec('Killed by the Nazis', 'Recorded in our family tree as victims of the Nazis.', groups['A'], 'killed'))
 if groups['B']: parts.append(sec('Probably murdered in Teplyk', 'Yad Vashem holds Pages of Testimony for people with these names, whose father or mother is named as Mendel and Feyga. We think they belong to our family but have not been able to confirm it.', groups['B'], 'probable'))
