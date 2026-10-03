@@ -85,6 +85,20 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
 .hero{border-left:3px solid var(--vis);padding:2px 0 2px 16px;max-width:70ch}
 .hero p{margin:0 0 10px}
 .hero .quote{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--ink)}
+
+.route{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:clamp(18px,3vw,30px)}
+.route h2{font-family:var(--serif);font-size:26px;font-weight:600;margin:0 0 4px;line-height:1.15}
+#routemap{height:min(520px,70vh);border:1px solid var(--rule);border-radius:4px;margin:14px 0 8px;background:var(--sunk)}
+.stops{counter-reset:s;list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:8px 28px}
+.stops li{counter-increment:s;padding:6px 0 6px 34px;position:relative;border-bottom:1px dotted var(--rule);font-size:14px}
+.stops li::before{content:counter(s);position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--pal);color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center}
+.stops .guess{color:var(--muted);font-style:italic}
+.surprise{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:14px}
+.surprise div{border-left:3px solid var(--bridge);padding:2px 0 2px 14px}
+.surprise h4{font-family:var(--serif);font-size:17px;margin:0 0 2px}
+.surprise p{margin:0;max-width:70ch}
+.surprise .ts{font-size:12px;color:var(--muted)}
+.aplay{margin:12px 0 4px}.aplay figcaption{font-size:13.5px;font-weight:500;margin-bottom:4px}.aplay figcaption span{color:var(--muted);font-weight:400}.aplay audio{width:100%;max-width:760px;display:block}
 </style>
 </head>
 <body>
@@ -104,8 +118,8 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
       <span>Palatnik line</span><span>Son of Pincus (Philip) Palat and Sarah (Sura) Sokolov</span><span>Husband of Jennie Shandel Goldberg</span><span>Born in Teplyk, 20 March 1902</span>
     </div>
     <p>Max was the youngest of seven children and grew up in Teplyk, a town he remembers as about 5,000 people, with the Jewish families living in the middle and most of the merchants Jewish. He recalls five synagogues, and says the Jews and their farming neighbours on the outskirts "got along with them really well, until the war broke out." He describes spending time at his oldest brother's carpentry and glass shop near the family home, and a household of eight people sharing one bedroom, sleeping on the floor.</p>
-    <p>Side A runs about 47 minutes and Side B about 24 minutes. The player below plays both.</p>
-    <div class="vid aud"><iframe src="https://archive.org/embed/JHS37SideA" title="Palat, Max: oral history, JHS 37 (Internet Archive)" loading="lazy" allowfullscreen></iframe></div>
+    <p>Side A runs about 47 minutes and Side B about 24 minutes. Each side has its own player below.</p>
+    <figure class="aplay"><figcaption>Side A <span>(47 min)</span></figcaption><audio controls preload="none" src="https://archive.org/download/JHS37SideA/JHS%2037-%20side%20A.mp3">Your browser does not support audio. <a href="https://archive.org/download/JHS37SideA/JHS%2037-%20side%20A.mp3">Download the MP3</a>.</audio></figure><figure class="aplay"><figcaption>Side B <span>(24 min)</span></figcaption><audio controls preload="none" src="https://archive.org/download/JHS37SideA/JHS%2037-%20side%20B.mp3">Your browser does not support audio. <a href="https://archive.org/download/JHS37SideA/JHS%2037-%20side%20B.mp3">Download the MP3</a>.</audio></figure>
 
     <details style="margin:12px 0 0;padding:8px 12px;border:1px solid var(--rule);border-radius:4px;background:var(--sunk)">
       <summary style="cursor:pointer;font-weight:500;padding:4px 0;user-select:none">Interview summary and transcript</summary>
@@ -131,6 +145,37 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
     <p class="src">Source: <a href="https://archive.org/details/JHS37SideA">JHS 37, "Palat, Max," on the Internet Archive</a> (Trentoniana collection, Jewish Historical Society oral histories, Trenton, New Jersey).</p>
   </section>
 
+  <section class="route" aria-labelledby="journey">
+    <h2 id="journey">Max and Herman's journey from Teplyk to America</h2>
+    <p class="sub" style="color:var(--muted);max-width:70ch;margin:0 0 6px">A best-guess route drawn from Max's own account (JHS 37). Solid markers are places he names; dashed legs and "?" stops are inferred. He says he was about 19 when he ran, so probably 1921, and gives his arrival as 29 October 1922. (Elaine's interview says 1923.)</p>
+    <p class="src" style="margin:10px 0 0">The map shows the European leg. From Danzig the <i>Polonia</i> took 13 days to New York.</p>
+    <div id="routemap" role="img" aria-label="Map of the route from Teplyk through Bessarabia, Kishinev and Bucharest to Danzig and New York"></div>
+    <ol class="stops">
+      <li><b>Teplyk</b>, Ukraine. Max leaves in the chaos of the civil war, with Kerensky money and a basket of food.</li>
+      <li><b>Bershad</b> (best guess). By horse and wagon to a town where a cousin lived, with a ferry crossing on the way. A guard searches their baskets for hidden money; a $5 bribe settles it. <span class="guess">The recording is unclear; the name is my guess.</span></li>
+      <li><b>Kamenka</b> (best guess), on the Dniester, then the Soviet-Romanian border. First attempt to cross at midnight: caught by border guards and jailed overnight, then released. <span class="guess">Could also be Yampol or Kamenets-Podolsk.</span></li>
+      <li><b>Second crossing</b> of the Dniester. The guide delivers them to bandits who rob them. They walk to <b>Soroca</b> (best guess), the first Bessarabian town, and knock on the one house with Friday-night candles. <span class="guess">Town name is my guess.</span></li>
+      <li><b>Kishinev</b> (Chisinau), Bessarabia, then Romania. Aid from HIAS, a soup kitchen, a job, and and in the border town Herman turns up from the jail.</li>
+      <li><b>Bucharest.</b> Waiting for affidavits from Uncle Hymie; the consul; the paper with a number. <span class="guess">The Celia meeting is at the HIAS mail board; city not certain.</span></li>
+      <li><b>Through Germany to Danzig</b> (Gdansk). Disinfection and about five days in quarantine. <span class="guess">Route and port are my best reading of the audio.</span></li>
+      <li><b>The ship <i>Polonia</i></b> (Red Star Line), 13 days at sea, very seasick, then the Statue of Liberty.</li>
+      <li><b>New York</b>, 29 October 1922. Then Trenton, New Jersey.</li>
+    </ol>
+    <h3 style="font-family:var(--serif);font-size:20px;margin:22px 0 0">The surprises and turning points</h3>
+    <div class="surprise">
+      <div><h4>Under the bed</h4><p>Sick with typhoid, Max is left alone as soldiers ransack the house, and hides under the bed, trying not to breathe. A soldier picks up a bag of his mother's silverware and leaves without looking under it.</p><span class="ts">Side A, about 23:00&ndash;26:00</span></div>
+      <div><h4>The thirteen-year-old "manager"</h4><p>When the First World War takes his oldest brother and his workers, 13-year-old Max runs the shop for his brother's wife and six children. And that wife is also his half-sister: "my father's daughter married my mother's son."</p><span class="ts">Side A, about 9:00&ndash;11:00</span></div>
+      <div><h4>"Why should you go to America?"</h4><p>A talented brother had papers to emigrate, but their father talked him out of it. He went to the war and was killed.</p><span class="ts">Side A, about 12:00</span></div>
+      <div><h4>Caught, jailed, and let go</h4><p>At the Dniester the border guards jail Max and about 25 others. The officer scoffs, "You want to go to America? We'll show you America," and the judge warns that next time they will be thrown in the water. They laugh and try again.</p><span class="ts">Side A, about 35:00&ndash;38:00</span></div>
+      <div><h4>Friday-night candles</h4><p>Robbed by bandits and wandering lost in the dark, Max sees one house with lit candles, speaks Yiddish at the door, and is taken in by a Jewish family.</p><span class="ts">Side A, about 41:00&ndash;43:00</span></div>
+      <div><h4>Meeting Herman</h4><p>In the refugee town, Max is told someone in the jail says he is his brother. It is Herman, who had followed him: unshaven, dirty, in a peasant's coat. Max pays a guard to get him out, takes him to the bathhouse, and buys him a coat. From then on they travel together.</p><span class="ts">Side A, about 44:00&ndash;46:00; Side B, start</span></div>
+      <div><h4>Meeting Celia</h4><p>Reading the HIAS mail board, Max sees a letter for a name he recognizes from the family: Celia, a cousin from Odessa whom he had never met. They wait at the office for her to come, and she turns up with her child.</p><span class="ts">Side B, about 10:00&ndash;12:00</span></div>
+      <div><h4>Argentina or America?</h4><p>Waiting for papers, Max writes to an aunt in Argentina, who sends tickets and money at once. But the tickets from America arrive too, and they choose America.</p><span class="ts">Side B, about 14:00</span></div>
+      <div><h4>Sweet-talking the consul</h4><p>Told their quota number is six months away, Max skips the three-block line, tells the consul they are "two poor boys" and asks for an earlier number. The consul says to come back in a week, and when they do, their papers are ready.</p><span class="ts">Side B, about 16:00&ndash;19:30</span></div>
+    </div>
+    <p class="src" style="margin-top:14px">Route and stops are my reading of the recording; please correct anything that is wrong. Times are approximate.</p>
+  </section>
+
   <section class="vic testimony" aria-labelledby="elaine">
     <h2 id="elaine">Elaine (Palat) Lavine remembers her parents</h2>
     <p class="sub">Recorded on 4 May 1996 for the Jewish Historical Society's oral history project in Trenton.</p>
@@ -140,7 +185,7 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
     <p>Elaine is asked to recall her childhood and her time with her parents, and tells the story of her father, Max Palat. Born in 1902, he came to the United States in 1923 through Ellis Island. He left Russia at 19, with the words "Times are bad, I'm leaving," and then spent two years trying to reach America. In Trenton he enjoyed the Jewish community and joined the Jewish Community Center, the Y.</p>
     <p>Her mother had come from Poland and worked as a seamstress in Philadelphia. Together her parents bought a bakery, Fries Bakery on Union Street, in partnership with a Sam Clempert. It is a companion to Max's own account above.</p>
     <p>This is Side A, about 47 minutes. The archive's description says the interview continues on a Side B, which is not online.</p>
-    <div class="vid aud" style="height:100px"><iframe src="https://archive.org/embed/JHS35SideA" title="Lavine, Elaine Palat: oral history, JHS 35 (Internet Archive)" loading="lazy" allowfullscreen></iframe></div>
+    <figure class="aplay"><figcaption>Side A <span>(47 min)</span></figcaption><audio controls preload="none" src="https://archive.org/download/JHS35SideA/JHS%2035-%20side%20A.mp3">Your browser does not support audio. <a href="https://archive.org/download/JHS35SideA/JHS%2035-%20side%20A.mp3">Download the MP3</a>.</audio></figure>
 
     <details style="margin:12px 0 0;padding:8px 12px;border:1px solid var(--rule);border-radius:4px;background:var(--sunk)">
       <summary style="cursor:pointer;font-weight:500;padding:4px 0;user-select:none">Interview summary and transcript</summary>
@@ -182,5 +227,23 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
 
   <footer>Recordings belong to the archives named above. Where the archive describes a family member only as "granddaughter," we do the same.</footer>
 </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function(){
+  if(!window.L||!document.getElementById('routemap'))return;
+  var m=L.map('routemap',{scrollWheelZoom:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:8,attribution:'&copy; OpenStreetMap'}).addTo(m);
+  var pts=[
+   [48.65,29.74,'1. Teplyk',1],[48.37,29.52,'2. Bershad (best guess)',0],[48.04,28.69,'3. Kamenka on the Dniester (best guess)',0],
+   [48.16,28.30,'4. Soroca, Bessarabia (best guess)',0],[47.01,28.86,'5. Kishinev',1],[44.43,26.10,'6. Bucharest',1],
+   [54.35,18.65,'7. Danzig (best guess)',0],[40.71,-74.0,'8. New York, 29 Oct 1922',1]];
+  var line=[[48.65,29.74],[48.37,29.52],[48.04,28.69],[48.16,28.30],[47.01,28.86],[44.43,26.10],[52.5,13.4],[54.35,18.65]];
+  L.polyline(line,{color:'#2E4D8C',weight:3,dashArray:'6 6'}).addTo(m);
+  pts.forEach(function(p){L.circleMarker([p[0],p[1]],{radius:8,color:'#2E4D8C',fillColor:p[3]?'#2E4D8C':'#fff',fillOpacity:1,weight:2}).addTo(m).bindTooltip(p[2],{permanent:false});});
+  m.fitBounds(L.latLngBounds(line),{padding:[30,30]});
+  L.marker([54.35,18.65],{opacity:0}).addTo(m).bindTooltip('From Danzig: 13 days by ship to New York, 29 Oct 1922',{permanent:true,direction:'right',offset:[10,0]});
+})();
+</script>
 </body>
 </html>
