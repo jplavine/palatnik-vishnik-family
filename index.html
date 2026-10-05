@@ -377,10 +377,15 @@ byKey.forEach(n=>{
 
 // ---------- facts ----------
 (function(){
-  const count=view=>{ const ids=new Set(); let g=0; byKey.forEach(n=>{ if(n.view!==view||n.ref||n.step) return; ids.add(n.id); g=Math.max(g,n.depth); }); return [ids.size,g]; };
-  const [sd,sg]=count('sarah'), [wd]=count('wider');
+  const count=(view,skipRootSpouses)=>{
+    const ids=new Set(), sp=new Set(); let g=0;
+    byKey.forEach(n=>{ if(n.view!==view||n.ref||n.step) return; ids.add(n.id); g=Math.max(g,n.depth); });
+    byKey.forEach(n=>{ if(n.view!==view||n.ref||n.step) return; if(skipRootSpouses&&!n.parent) return; (n.sp||[]).forEach(s=>{ if(!ids.has(s.id)) sp.add(s.id); }); });
+    return [ids.size,g,sp.size];
+  };
+  const [sd,sg,ss]=count('sarah',true), [wd,,ws]=count('wider',false);
   document.getElementById('facts').innerHTML =
-    `<li><b>${sd-1}</b>descendants of Sarah</li><li><b>${sg}</b>generations</li><li><b>${wd}</b>people in the wider family</li>`;
+    `<li><b>${sd-1+ss}</b>descendants of Sarah and their spouses</li><li><b>${sg}</b>generations</li><li><b title="Europe, North America and Asia">3</b>continents</li><li><b>${wd+ws}</b>people in the wider family, with spouses</li>`;
 })();
 
 // ---------- tree ----------
