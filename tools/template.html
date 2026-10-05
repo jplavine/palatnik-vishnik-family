@@ -263,7 +263,7 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
     <svg id="svg" aria-hidden="true"><g id="zoomg"><g id="labels"></g><g id="links"></g></g></svg>
     <div class="layer" id="layer" role="group" aria-label="Family tree"></div>
     <div class="genbar" id="genbar" aria-hidden="true"></div>
-    <div class="hint">Drag to move · pinch or ⌘/Ctrl + scroll to zoom · click a card for details</div>
+    <div class="hint">Drag or swipe sideways to move · pinch or ⌘/Ctrl + scroll to zoom · click a card for details</div>
     <aside class="panel" id="panel" hidden aria-live="polite"></aside>
   </div>
 
@@ -396,6 +396,16 @@ function placeGenbar(t){
   document.querySelectorAll('#genbar span').forEach(s=>{ s.style.left=(t.x+(+s.dataset.d-1)*COLW*t.k+4)+'px'; });
 }
 stage.call(zoom).on('dblclick.zoom',null);
+// sideways swipe (trackpad) or Shift + scroll pans the tree; plain up/down scrolling still scrolls the page
+stage.node().addEventListener('wheel',e=>{
+  if(e.ctrlKey||e.metaKey||e.target.closest('.panel')) return;
+  let dx=e.deltaX; if(e.shiftKey && !dx) dx=e.deltaY;
+  if(!dx || (!e.shiftKey && Math.abs(e.deltaX)<Math.abs(e.deltaY))) return;
+  e.preventDefault();
+  if(e.deltaMode===1) dx*=16;
+  const t=d3.zoomTransform(stage.node());
+  stage.call(zoom.transform, t.translate(-dx/t.k,0));
+},{passive:false});
 let lastRoot=null;
 
 function hiddenCount(n){ let c=0; (n.kids||[]).forEach(k=>{ c++; c+=hiddenCount(k); }); return c; }
