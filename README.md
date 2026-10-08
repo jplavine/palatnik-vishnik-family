@@ -1,4 +1,4 @@
-# Palatnik & Vishnik Family Tree
+# Palatnik & Veshnack Family Tree
 
 Descendants of David Palatnik and Yankel Meir Vishnik of Teplik, Ukraine, with their spouses.
 
