@@ -226,9 +226,9 @@ footer{border-top:1px solid var(--rule);padding-top:14px;font-size:12.5px;color:
   <aside class="bridge" aria-label="How the families connect">
     <h2>Where the families meet</h2>
     <div class="bridge-grid">
-      <p><button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button>, daughter of Samuel Sokolow and Annie Becker?, married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pincus (Philip) Palat</button>. Her six children with Asher, <button class="linkbtn v" data-goto="hymen">Hymen</button>, <button class="linkbtn v" data-goto="yankl">Yankl</button>, <button class="linkbtn v" data-goto="rifke">Rifke</button>, <button class="linkbtn v" data-goto="shmiel">Shmiel</button>, <button class="linkbtn v" data-goto="hana">Hana Hynice</button> and <button class="linkbtn v" data-goto="schaya">Schaya</button>, were half-siblings of her sons with Pincus, <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
-      <p>Pincus had five children before he married Sarah, with a first wife whose name we do not yet have: <button class="linkbtn" data-goto="chaya">Chaya</button>, <button class="linkbtn" data-goto="feiga">Feiga</button>, <button class="linkbtn" data-goto="moshe">Moshe</button>, <button class="linkbtn" data-goto="mendel">Mendel</button> and <button class="linkbtn" data-goto="levi">Levi</button>. They were older half-siblings of Herman and Max. That matches what Max says in <a href="audio.html#max">his oral history</a>: each of his parents already had five children when they married, and then "two more children were born, me and my brother."</p>
-      <p>Sarah's son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pincus's daughter from a prior marriage, <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>, joining the two families again.</p>
+      <p><button class="linkbtn lead-link" data-goto="sarah">Sarah (Sura) Sokolov</button>, daughter of Samuel Sokolow and Annie Becker?, married <button class="linkbtn v" data-goto="asher">Asher Zelig Veshnack</button>. After his death she married <button class="linkbtn" data-goto="pincus">Pinchas (Philip) Palat</button>. Her six children with Asher, <button class="linkbtn v" data-goto="hymen">Hymen</button>, <button class="linkbtn v" data-goto="yankl">Yankl</button>, <button class="linkbtn v" data-goto="rifke">Rifke</button>, <button class="linkbtn v" data-goto="shmiel">Shmiel</button>, <button class="linkbtn v" data-goto="hana">Hana Hynice</button> and <button class="linkbtn v" data-goto="schaya">Schaya</button>, were half-siblings of her sons with Pinchas, <button class="linkbtn" data-goto="herman">Herman</button> and <button class="linkbtn" data-goto="max">Max Palat</button>.</p>
+      <p>Pinchas had five children before he married Sarah, with a first wife whose name we do not yet have: <button class="linkbtn" data-goto="chaya">Chaya</button>, <button class="linkbtn" data-goto="feiga">Feiga</button>, <button class="linkbtn" data-goto="moshe">Moshe</button>, <button class="linkbtn" data-goto="mendel">Mendel</button> and <button class="linkbtn" data-goto="levi">Levi</button>. They were older half-siblings of Herman and Max. That matches what Max says in <a href="audio.html#max">his oral history</a>: each of his parents already had five children when they married, and then "two more children were born, me and my brother."</p>
+      <p>Sarah's son <button class="linkbtn v" data-goto="yankl">Yankl Vishnak</button> married Pinchas's daughter from a prior marriage, <button class="linkbtn" data-goto="chaya">Chaya Palatnik</button>, joining the two families again.</p>
       <p>Two of her children married a sister and brother: <button class="linkbtn v" data-goto="hymen">Hymen</button> married <strong>Pearl Goodman</strong>, and <button class="linkbtn v" data-goto="rifke">Rifke</button> married Pearl's brother <strong>Sanya Gutman</strong>. The family used both spellings, Gutman and Goodman.</p>
     </div>
       <p class="spell">Names are spelled as recorded: Sokolov, Sokolow, Sokoloff · Palatnik, Palat, Palatt, Pallot, Polatin · Vishnik, Vishnak, Veshnack, Veshnock, Westock.</p>
@@ -281,7 +281,7 @@ const DATA = JSON.parse(document.getElementById('data').textContent);
 const VIEWS = DATA.views;
 const VIEW_META = {
   sarah:   {label:'Sarah', root:'Sarah', title:'Descendants of Sarah (Sura) Sokolov'},
-  pinchas: {label:'Pinchas', root:'Pinchas', title:'Descendants of Pinchas (Pincus) Palat'},
+  pinchas: {label:'Pinchas', root:'Pinchas', title:'Descendants of Pinchas (Philip) Palat'},
   asher:   {label:'Asher Zelig', root:'Asher Zelig', title:'Descendants of Asher Zelig Veshnack'},
   wider:   {label:'Wider family', title:'The wider family', numbered:true},
 };
@@ -293,7 +293,7 @@ const parentsTxt = DATA.sarah_parents.map(p=>p.name).join(' and ');
 const sibsTxt = DATA.sarah_siblings.map(p=>p.name).join(', ');
 const VIEW_NOTE = {
   sarah: `<strong>Sarah (Sura) Sokolov</strong>, daughter of ${parentsTxt}${sibsTxt?` and sister of ${sibsTxt}`:''}. Her children with Asher Zelig Veshnack come first, then her children with Pinchas Palat.`,
-  pinchas: `<strong>Pinchas (Pincus) Palat</strong> had children with his first wife and with Sarah (Sura) Sokolov.`,
+  pinchas: `<strong>Pinchas (Philip) Palat</strong> had children with his first wife and with Sarah (Sura) Sokolov.`,
   asher: `<strong>Asher Zelig Veshnack</strong> and Sarah (Sura) Sokolov had six children. Asher died before 1899.`,
   wider: `The complete Sokolov, Palatnik and Vishnik lines, numbered in the d'Aboville system. Sarah's family is in the middle.`,
 };
@@ -561,7 +561,7 @@ document.addEventListener('click',e=>{
 const bridgeTargets={
   'sarah':()=>keyWhere(n=>n.lead),
   'asher':()=>keyWhere(n=>n.name.startsWith('Asher Zelig')),
-  'pincus':()=>keyWhere(n=>n.name.startsWith('Pincus')),
+  'pincus':()=>keyWhere(n=>n.name.startsWith('Pinchas')),
   'hymen':()=>keyWhere(n=>n.name.startsWith('Hymen') && !n.ref),
   'herman':()=>keyWhere(n=>n.name.startsWith('Herman')),
   'max':()=>keyWhere(n=>n.name.startsWith('Max Motel')),
